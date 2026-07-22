@@ -1,0 +1,11 @@
+const express = require("express");
+const router = express.Router();
+const inscriptionControllers = require("../controllers/inscriptionController.js");
+const authorize = require("../middlewares/roleMiddleware");
+const protect = require("../middlewares/authMiddleware");
+router.post("/ajouter", inscriptionControllers.ajouterInscription);
+router.get("/lister", protect, authorize('teacher', 'admin'),inscriptionControllers.listerInscriptions);
+router.get("/:id",protect, authorize('teacher', 'admin'), inscriptionControllers.getbyIdInscription);
+router.put("/:id", inscriptionControllers.updateInscription);
+router.delete("/:id", inscriptionControllers.deleteInscription);
+module.exports = router;

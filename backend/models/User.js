@@ -1,0 +1,30 @@
+const mongoose = require("mongoose");
+const options = {
+    discriminatorKey: "role",
+    collection: "users",
+    timestamps: true,
+};
+const userSchema = new mongoose.Schema(
+    {
+        firstName: { type: String, required: true, trim: true },
+        lastName: { type: String, required: true, trim: true },
+        email: {
+            type: String,
+            unique: true,
+            required: true,
+            lowercase: true,
+            trim: true,
+        },
+        password: { type: String, required: true },
+        role: {
+            type: String,
+            enum: ["admin", "teacher", "student"],
+            default: "student",
+        },
+        phone: String,
+        avatar: String,
+        isActive: { type: Boolean, default: true },
+    },
+    options // on appele la fonction options pour l'utilise
+);
+module.exports = mongoose.model("user", userSchema);

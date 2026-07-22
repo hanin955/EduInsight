@@ -1,0 +1,12 @@
+const express = require("express");
+const router = express.Router();
+const quizControllers = require("../controllers/quizController.js");
+const authorize = require("../middlewares/roleMiddleware");
+const protect = require("../middlewares/authMiddleware");
+router.post("/ajouter", protect, authorize('teacher', 'admin'),quizControllers.ajouterQuiz);
+router.get("/lister", quizControllers.listerQuiz);
+router.get("/:id", quizControllers.getbyIdQuiz);
+router.put("/:id", protect, authorize('teacher', 'admin'), quizControllers.updateQuiz);
+router.delete("/:id", protect, authorize('teacher', 'admin'), quizControllers.deleteQuiz);
+router.patch('/:id/publish',quizControllers.publishQuiz);
+module.exports = router;

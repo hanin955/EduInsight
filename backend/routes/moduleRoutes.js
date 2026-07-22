@@ -1,0 +1,11 @@
+const express = require("express");
+const router = express.Router();
+const moduleControllers = require("../controllers/moduleController.js");
+const authorize = require("../middlewares/roleMiddleware");
+const protect = require("../middlewares/authMiddleware");
+router.post("/ajouter", protect, authorize('teacher', 'admin'),moduleControllers.ajouterModule);
+router.get("/lister", moduleControllers.listerModules);
+router.get("/:id", moduleControllers.getbyIdModule);
+router.put("/:id", protect, authorize('teacher', 'admin'), moduleControllers.updateModule);
+router.delete("/:id", protect, authorize('teacher', 'admin'),moduleControllers.deleteModule);
+module.exports = router;

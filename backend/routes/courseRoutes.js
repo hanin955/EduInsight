@@ -1,0 +1,12 @@
+const express = require('express');
+const router = express.Router();
+const courseControllers = require("../controllers/courseController.js");
+const authorize = require("../middlewares/roleMiddleware");
+const protect = require("../middlewares/authMiddleware");
+router.post("/ajouter",protect, authorize('teacher', 'admin'),courseControllers.ajouterCourse);
+router.get("/list",courseControllers.listerCourses);
+router.get("/:id",courseControllers.listerbyIdCourse);
+router.put("/:id",protect, authorize('teacher', 'admin'),courseControllers.updateCourse);
+router.delete("/:id",courseControllers.deleteCourse);
+router.post('/:id/enroll', protect, authorize('student'),courseControllers.enrollCourse);
+module.exports = router;

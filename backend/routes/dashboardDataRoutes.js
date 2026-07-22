@@ -1,0 +1,13 @@
+const express = require("express");
+const router = express.Router();
+const { protect, authorize } = require('../middlewares/authMiddleware.js');
+const dashboardDataControllers = require("../controllers/dashboardDataController.js");
+router.post("/ajouter",protect, authorize('admin'), dashboardDataControllers.ajouterDashboardData);
+router.get("/lister", dashboardDataControllers.listerDashboardData);
+router.get("/:id", dashboardDataControllers.getbyIdDashboardData);
+router.put("/:id",protect, authorize('admin'), dashboardDataControllers.updateDashboardData);
+router.delete("/:id",protect, authorize('admin'), dashboardDataControllers.deleteDashboardData);
+router.get('/student', protect, authorize('student'), generateForStudent);
+router.get('/teacher/course/:courseId', protect, authorize('teacher'), generateForTeacher);
+router.get('/admin', protect, authorize('admin'), generateForAdmin);
+module.exports = router;

@@ -1,0 +1,11 @@
+const express = require("express");
+const router = express.Router();
+const questionControllers = require("../controllers/questionController.js");
+const authorize = require("../middlewares/roleMiddleware");
+const protect = require("../middlewares/authMiddleware");
+router.post("/ajouter", protect, authorize('teacher', 'admin'), questionControllers.ajouterQuestion);
+router.get("/lister", questionControllers.listerQuestions);
+router.get("/:id", questionControllers.getbyIdQuestion);
+router.put("/:id", protect, authorize('teacher', 'admin'), questionControllers.updateQuestion);
+router.delete("/:id", protect, authorize('teacher', 'admin'),questionControllers.deleteQuestion);
+module.exports = router;
