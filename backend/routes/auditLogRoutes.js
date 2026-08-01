@@ -1,9 +1,10 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const auditLogControllers = require("../controllers/auditLogController.js");
-router.post("/ajouter", auditLogControllers.ajouterAuditLog);
-router.get("/lister", auditLogControllers.listerAuditLogs);
-router.get("/:id", auditLogControllers.getbyIdAuditLog);
-router.put("/:id", auditLogControllers.updateAuditLog);
-router.delete("/:id", auditLogControllers.deleteAuditLog);
-module.exports = router;
+import { ajouterAuditLog, listerAuditLogs, getbyIdAuditLog, updateAuditLog, deleteAuditLog } from "../controllers/auditLogController.js";
+
+router.post("/ajouter", ajouterAuditLog);
+router.get("/lister", listerAuditLogs);
+router.get("/:id", getbyIdAuditLog);
+router.put("/:id", updateAuditLog);
+router.delete("/:id", deleteAuditLog);
+export default router;

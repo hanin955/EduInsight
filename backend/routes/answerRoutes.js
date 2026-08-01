@@ -1,9 +1,10 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const answerControllers = require("../controllers/answerController.js");
-router.post("/ajouter", answerControllers.ajouterAnswer);
-router.get("/lister", answerControllers.listerAnswers);
-router.get("/:id", answerControllers.getbyIdAnswer);
-router.put("/:id", answerControllers.updateAnswer);
-router.delete("/:id", answerControllers.deleteAnswer);
-module.exports = router;
+import { ajouterAnswer, listerAnswers, getbyIdAnswer, updateAnswer, deleteAnswer } from "../controllers/answerController.js";
+
+router.post("/ajouter", ajouterAnswer);
+router.get("/lister", listerAnswers);
+router.get("/:id", getbyIdAnswer);
+router.put("/:id", updateAnswer);
+router.delete("/:id", deleteAnswer);
+export default router;

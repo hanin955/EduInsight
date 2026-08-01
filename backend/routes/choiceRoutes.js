@@ -1,9 +1,10 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const choiceControllers = require("../controllers/choiceController.js");
-router.post("/ajouter", choiceControllers.ajouterChoice);
-router.get("/lister", choiceControllers.listerChoices);
-router.get("/:id", choiceControllers.getbyIdChoice);
-router.put("/:id", choiceControllers.updateChoice);
-router.delete("/:id", choiceControllers.deleteChoice);
-module.exports = router;
+import { ajouterChoice, listerChoices, getbyIdChoice, updateChoice, deleteChoice } from "../controllers/choiceController.js";
+
+router.post("/ajouter", ajouterChoice);
+router.get("/lister", listerChoices);
+router.get("/:id", getbyIdChoice);
+router.put("/:id", updateChoice);
+router.delete("/:id", deleteChoice);
+export default router;

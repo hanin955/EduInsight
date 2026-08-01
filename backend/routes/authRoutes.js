@@ -1,67 +1,79 @@
-const express = require("express");
-const router = express.Router(); 
-const { register, login } = require("../controllers/authController");
-const protect = require("../middlewares/authMiddleware");
-const authorize = require("../middlewares/roleMiddleware");
-const courController = require("../controllers/courseController");
-const lessonController = require("../controllers/lessonController");
-const choiceController = require("../controllers/choiceController");
-const quizAttemptController = require("../controllers/quizAttemptController");
-const dashboardDatController = require("../controllers/dashboardDataController");
-const recommandationsController = require("../controllers/recommendationController");
-const moduleController = require("../controllers/moduleController");
-const questionContoller = require("../controllers/questionController");
-const userController = require("../controllers/userController");
-const departementController = require("../controllers/departementController");
-const performanceMetricController = require("../controllers/performanceMetricController");
-const { logout, updateProfile, changePassword } = require('../controllers/authController.js');
+import express from "express";
+const router = express.Router();
+
+import { register, login, logout, updateProfile, changePassword } from "../controllers/authController.js";
+import protect from "../middlewares/authMiddleware.js";
+import authorize from "../middlewares/roleMiddleware.js";
+
+import { listerCourses, listerbyIdCourse, ajouterCourse, updateCourse, deleteCourse } from "../controllers/courseController.js";
+import { listerLessons, ajouterLesson, updateLesson, deleteLesson } from "../controllers/lessonController.js";
+import { ajouterChoice } from "../controllers/choiceController.js";
+import { listerQuizAttempts } from "../controllers/quizAttemptController.js";
+import { getbyIdDashboardData } from "../controllers/dashboardDataController.js";
+import { getbyIdRecommendation } from "../controllers/recommendationController.js";
+import { ajouterModule, updateModule, deleteModule } from "../controllers/moduleController.js";
+import { ajouterQuestion, listerQuestions, updateQuestion, deleteQuestion } from "../controllers/questionController.js";
+import { ajouterUtilisateur, listerUtilisateurs, updateUtilisateur, deleteUtilisateur } from "../controllers/userController.js";
+import { ajouterDepartement, updateDepartement, deleteDepartement, listerDepartements } from "../controllers/departementController.js";
+import { listerPerformanceMetrics } from "../controllers/performanceMetricController.js";
+
 // ACCÈS & PROFIL
 router.post("/register", register);
 router.post("/login", login);
 router.post('/logout', protect, logout);
 router.put('/profile', protect, updateProfile);
 router.patch('/change-password', protect, changePassword);
+
 router.get("/list", protect, authorize(["student", "teacher"]), (req, res) => {
     res.json({ message: "Profil utilisateur", user: req.user });
 });
-router.put("/updateprofile", protect, authorize(["student", "teacher"]),updateProfile); // modifier son profil
+router.put("/updateprofile", protect, authorize(["student", "teacher"]), updateProfile);
+
 router.get("/admin", protect, authorize(["admin"]), (req, res) => {
     res.json({ message: "Espace administrateur" });
 });
-router.get("/consolter", protect, authorize(["student", "teacher"]), courController.listerCourses);
-router.get("/filtrer", protect, authorize(["student", "teacher"]), courController.listerbyIdCourse); 
-router.get("/suivre", protect, authorize(["student", "teacher"]), lessonController.listerLessons);
-router.post("/participer", protect, authorize(["student"]), choiceController.ajouterChoice);
-router.get("/score", protect, authorize(["student"]), quizAttemptController.listerQuizAttempts);
-router.get("/rec", protect, authorize(["student"]), recommandationsController.getbyIdRecommendation);
-router.get("/logout",protect,authorize("teacher","student"),logout);
-// GESTION PÉDAGOGIQUE (Enseignant) 
-router.post("/ajouter", protect, authorize(["teacher", "admin"]), courController.ajouterCourse);
-router.put("/update", protect, authorize(["teacher", "admin"]), courController.updateCourse);
-router.delete("/delete", protect, authorize(["teacher", "admin"]), courController.deleteCourse);
-router.post("/ajoutermodule", protect, authorize(["teacher"]), moduleController.ajouterModule);
-router.put("/updatemodule", protect, authorize(["teacher"]), moduleController.updateModule); 
-router.delete("/deletemodule", protect, authorize(["teacher"]), moduleController.deleteModule); 
-router.post("/ajouterlesson", protect, authorize(["teacher"]), lessonController.ajouterLesson);
-router.put("/updateleçon", protect, authorize(["teacher"]), lessonController.updateLesson);
-router.delete("/deleteleçon", protect, authorize(["teacher"]), lessonController.deleteLesson);
-router.post("/ajouterquestion", protect, authorize(["teacher"]), questionContoller.ajouterQuestion);
-router.get("/listerquestion", protect, authorize(["student", "teacher"]), questionContoller.listerQuestions);
-router.put("/updeteqeustion", protect, authorize(["teacher"]), questionContoller.updateQuestion);
-router.delete("/deletequestion", protect, authorize(["teacher"]), questionContoller.deleteQuestion);
-router.get("/tentatives", protect, authorize(["teacher"]), quizAttemptController.listerQuizAttempts); 
-router.get("/dashboard", protect, authorize(["teacher"]), dashboardDatController.getbyIdDashboardData); 
-router.get("/statistiques", protect, authorize(["teacher"]), performanceMetricController.listerPerformanceMetrics);
+
+router.get("/consolter", protect, authorize(["student", "teacher"]), listerCourses);
+router.get("/filtrer", protect, authorize(["student", "teacher"]), listerbyIdCourse);
+router.get("/suivre", protect, authorize(["student", "teacher"]), listerLessons);
+router.post("/participer", protect, authorize(["student"]), ajouterChoice);
+router.get("/score", protect, authorize(["student"]), listerQuizAttempts);
+router.get("/rec", protect, authorize(["student"]), getbyIdRecommendation);
+router.get("/logout", protect, authorize(["teacher", "student"]), logout);
+
+// GESTION PÉDAGOGIQUE (Enseignant)
+router.post("/ajouter", protect, authorize(["teacher", "admin"]), ajouterCourse);
+router.put("/update", protect, authorize(["teacher", "admin"]), updateCourse);
+router.delete("/delete", protect, authorize(["teacher", "admin"]), deleteCourse);
+
+router.post("/ajoutermodule", protect, authorize(["teacher"]), ajouterModule);
+router.put("/updatemodule", protect, authorize(["teacher"]), updateModule);
+router.delete("/deletemodule", protect, authorize(["teacher"]), deleteModule);
+
+router.post("/ajouterlesson", protect, authorize(["teacher"]), ajouterLesson);
+router.put("/updateleçon", protect, authorize(["teacher"]), updateLesson);
+router.delete("/deleteleçon", protect, authorize(["teacher"]), deleteLesson);
+
+router.post("/ajouterquestion", protect, authorize(["teacher"]), ajouterQuestion);
+router.get("/listerquestion", protect, authorize(["student", "teacher"]), listerQuestions);
+router.put("/updeteqeustion", protect, authorize(["teacher"]), updateQuestion);
+router.delete("/deletequestion", protect, authorize(["teacher"]), deleteQuestion);
+
+router.get("/tentatives", protect, authorize(["teacher"]), listerQuizAttempts);
+router.get("/dashboard", protect, authorize(["teacher"]), getbyIdDashboardData);
+router.get("/statistiques", protect, authorize(["teacher"]), listerPerformanceMetrics);
 
 // ADMINISTRATION
-router.post("/ajouteruser", protect, authorize(["admin"]), userController.ajouterUtilisateur);
-router.get("/listeruser", protect, authorize(["admin"]), userController.listerUtilisateurs);
-router.put("/updeteuser", protect, authorize(["admin"]), userController.updateUtilisateur);
-router.delete("/deleteuser", protect, authorize(["admin"]), userController.deleteUtilisateur);
-router.post("/ajouterdep", protect, authorize(["admin"]), departementController.ajouterDepartement);
-router.put("/updatedep", protect, authorize(["admin"]), departementController.updateDepartement);
-router.delete("/deletedep", protect, authorize(["admin"]), departementController.deleteDepartement);
-router.get("/lister", protect, authorize(["admin"]), departementController.listerDepartements);
-// "Consulter les rapports globaux" + "Gérer les paramètres du système"
-router.get("/rapports/statistiques", protect, authorize(["admin"]), dashboardDatController.getbyIdDashboardData);
-module.exports = router;
+router.post("/ajouteruser", protect, authorize(["admin"]), ajouterUtilisateur);
+router.get("/listeruser", protect, authorize(["admin"]), listerUtilisateurs);
+router.put("/updeteuser", protect, authorize(["admin"]), updateUtilisateur);
+router.delete("/deleteuser", protect, authorize(["admin"]), deleteUtilisateur);
+
+router.post("/ajouterdep", protect, authorize(["admin"]), ajouterDepartement);
+router.put("/updatedep", protect, authorize(["admin"]), updateDepartement);
+router.delete("/deletedep", protect, authorize(["admin"]), deleteDepartement);
+router.get("/lister", protect, authorize(["admin"]), listerDepartements);
+
+router.get("/rapports/statistiques", protect, authorize(["admin"]), getbyIdDashboardData);
+
+export default router;

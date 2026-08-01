@@ -1,8 +1,10 @@
-const express = require('express');
-const { createUser, updateUser, deleteUser } = require('../controllers/adminController.js');
-const { protect, authorize } = require('../middlewares/authMiddleware.js');
+import express from 'express';
+import { createUser, updateUser, deleteUser } from '../controllers/adminController.js';
+import protect from '../middlewares/authMiddleware.js';
+import authorize from '../middlewares/roleMiddleware.js';
+
 const router = express.Router();
-router.use(protect, authorize('admin'));
+router.use(protect, authorize(['admin']));
 router.post('/users', createUser);
 router.put('/users/:id', updateUser);
 router.delete('/users/:id', deleteUser);

@@ -1,11 +1,10 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const performanceMetricControllers = require("../controllers/performanceMetricController.js");
+import { ajouterPerformanceMetric, listerPerformanceMetrics, getbyIdPerformanceMetric, updatePerformanceMetric, deletePerformanceMetric } from "../controllers/performanceMetricController.js";
 
-router.post("/ajouter", performanceMetricControllers.ajouterPerformanceMetric);
-router.get("/lister", performanceMetricControllers.listerPerformanceMetrics);
-router.get("/:id", performanceMetricControllers.getbyIdPerformanceMetric);
-router.put("/:id", performanceMetricControllers.updatePerformanceMetric);
-router.delete("/:id", performanceMetricControllers.deletePerformanceMetric);
-
-module.exports = router;
+router.post("/ajouter", ajouterPerformanceMetric);
+router.get("/lister", listerPerformanceMetrics);
+router.get("/:id", getbyIdPerformanceMetric);
+router.put("/:id", updatePerformanceMetric);
+router.delete("/:id", deletePerformanceMetric);
+export default router;

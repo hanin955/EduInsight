@@ -1,9 +1,11 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+
 const options = {
     discriminatorKey: "role",
     collection: "users",
     timestamps: true,
 };
+
 const userSchema = new mongoose.Schema(
     {
         firstName: { type: String, required: true, trim: true },
@@ -25,6 +27,11 @@ const userSchema = new mongoose.Schema(
         avatar: String,
         isActive: { type: Boolean, default: true },
     },
-    options // on appele la fonction options pour l'utilise
+    options
 );
-module.exports = mongoose.model("user", userSchema);
+const User = mongoose.model("User", userSchema);
+const Admin = User.discriminator("admin", new mongoose.Schema({}));
+const Teacher = User.discriminator("teacher", new mongoose.Schema({}));
+const Student = User.discriminator("student", new mongoose.Schema({}));
+export { User, Admin, Teacher, Student };
+export default User;

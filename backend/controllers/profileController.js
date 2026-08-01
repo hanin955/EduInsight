@@ -1,1 +1,1 @@
-const user = require("../models/User");
+import user from "../models/User.js";

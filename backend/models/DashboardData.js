@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const dashboardDataSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     totalCourses: {
@@ -22,4 +22,4 @@ const dashboardDataSchema = new mongoose.Schema({
         default: 0,
     },
 });
-module.exports = mongoose.model("DashboardData", dashboardDataSchema);
+export default mongoose.model("DashboardData", dashboardDataSchema);

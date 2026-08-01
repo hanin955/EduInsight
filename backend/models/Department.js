@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const { modelName } = require("./User");
+import mongoose from "mongoose";
+import User from "../models/User.js";
 const departementSchema = new mongoose.Schema({
     name : String,
     description : String,
 },{timestamps :true});
-module.exports = mongoose.model("Department", departementSchema);
+export default mongoose.model("Department", departementSchema);

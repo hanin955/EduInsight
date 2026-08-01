@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const user = require("./models/User");
+import mongoose from "mongoose";
+import user from "./models/User.js";
 const getUsers = async()=>{
     try{
         await mongoose.connect("mongodb://localhost:27017/EduInsight");

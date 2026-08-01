@@ -1,5 +1,4 @@
-const jwt = require("jsonwebtoken");
-const user = require("../models/User");
+import jwt from "jsonwebtoken";
 const protect = async (req, res, next) => {
     const authHeaders = req.headers.authorization;
     if (!authHeaders || !authHeaders.startsWith("Bearer ")) {
@@ -18,4 +17,4 @@ const protect = async (req, res, next) => {
         res.status(401).json({ message: "Token invalide" });
     }
 };
-module.exports = protect;
+export default protect;

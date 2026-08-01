@@ -1,31 +1,55 @@
-const express =require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const connectDB = require("./config/db.js");
-const path = require("path");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
+import connectDB from "./config/db.js";
+
+import adminRoutes from "./routes/adminRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
+import departementRoutes from "./routes/departementRoutes.js";
+import quizRoutes from "./routes/quizRoutes.js";
+import quizAttemptRoutes from "./routes/quizAttemptRoutes.js";
+import answerRoutes from "./routes/answerRoutes.js";
+import questionRoutes from "./routes/questionRoutes.js";
+import choiceRoutes from "./routes/choiceRoutes.js";
+import auditLogRoutes from "./routes/auditLogRoutes.js";
+import moduleRoutes from "./routes/moduleRoutes.js";
+import lessonRoutes from "./routes/lessonRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import recommendationRoutes from "./routes/recommendationRoutes.js";
+import inscriptionRoutes from "./routes/inscriptionRoutes.js";
+import performanceMetricRoutes from "./routes/performanceMetricRoutes.js";
+
 dotenv.config();
 const app = express();
+
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended : true}));
+app.use(express.urlencoded({ extended: true }));
+
 connectDB();
+
+app.use("/admin", adminRoutes);
 app.use("/uploads", express.static(path.join(path.resolve(), "/uploads")));
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/users",require("./routes/userRoutes.js"));
-app.use("/api/courses",require("./routes/courseRoutes.js"));
-app.use("/api/departements",require("./routes/departementRoutes.js"));
-app.use("/api/quizzes",require("./routes/quizRoutes.js"));
-app.use("/api/quizattempts", require("./routes/quizAttemptRoutes.js"));
-app.use("/api/answers", require("./routes/answerRoutes.js"));
-app.use("/api/questions", require("./routes/questionRoutes.js"));
-app.use("/api/choices", require("./routes/choiceRoutes.js"));
-app.use("/api/auditlogs", require("./routes/auditLogRoutes.js"));
-app.use("/api/modules", require("./routes/moduleRoutes.js"));
-app.use("/api/lessons", require("./routes/lessonRoutes.js"));
-app.use("/api/notifications", require("./routes/notificationRoutes.js"));
-app.use("/api/recommendations", require("./routes/recommendationRoutes.js"));
-app.use("/api/inscriptions", require("./routes/inscriptionRoutes.js"));
-app.use("/api/performancemetrics", require("./routes/performanceMetricRoutes.js"));
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/departements", departementRoutes);
+app.use("/api/quizzes", quizRoutes);
+app.use("/api/quizattempts", quizAttemptRoutes);
+app.use("/api/answers", answerRoutes);
+app.use("/api/questions", questionRoutes);
+app.use("/api/choices", choiceRoutes);
+app.use("/api/auditlogs", auditLogRoutes);
+app.use("/api/modules", moduleRoutes);
+app.use("/api/lessons", lessonRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/recommendations", recommendationRoutes);
+app.use("/api/inscriptions", inscriptionRoutes);
+app.use("/api/performancemetrics", performanceMetricRoutes);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server lancé sur http://localhost:${PORT}`);

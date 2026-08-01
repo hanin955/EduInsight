@@ -1,7 +1,7 @@
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-const { error } = require("console");
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { error  } from "console";
 const uploadDir = "uploads/";
 if(!fs.exixtsSync(uploadDir)){
     fs.mkdirSync(uploadDir,{recursive : true});
@@ -27,4 +27,4 @@ const upload = multer({
     limits: { fileSize: 2 * 1024 * 1024 },
     fileFilter,
 });
-module.exports = upload;
+export default upload;

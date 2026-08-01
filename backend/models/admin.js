@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const User = require("./User");
+import mongoose from "mongoose";
+import User from "./User.js";
 const adminSchema = mongoose.Schema({
-    premissions :[{type : string}],
+    premissions: ['ALL_PERMISSIONS'] ,
 });
-module.exports = User.discriminator("admin",adminSchema);
+export default User.discriminator("admin",adminSchema);

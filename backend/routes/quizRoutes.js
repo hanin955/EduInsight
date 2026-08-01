@@ -1,12 +1,13 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const quizControllers = require("../controllers/quizController.js");
-const authorize = require("../middlewares/roleMiddleware");
-const protect = require("../middlewares/authMiddleware");
-router.post("/ajouter", protect, authorize('teacher', 'admin'),quizControllers.ajouterQuiz);
-router.get("/lister", quizControllers.listerQuiz);
-router.get("/:id", quizControllers.getbyIdQuiz);
-router.put("/:id", protect, authorize('teacher', 'admin'), quizControllers.updateQuiz);
-router.delete("/:id", protect, authorize('teacher', 'admin'), quizControllers.deleteQuiz);
-router.patch('/:id/publish',quizControllers.publishQuiz);
-module.exports = router;
+import { ajouterQuiz, listerQuiz, getbyIdQuiz, updateQuiz, deleteQuiz, publishQuiz } from "../controllers/quizController.js";
+import authorize from "../middlewares/roleMiddleware.js";
+import protect from "../middlewares/authMiddleware.js";
+
+router.post("/ajouter", protect, authorize(['teacher', 'admin']), ajouterQuiz);
+router.get("/lister", listerQuiz);
+router.get("/:id", getbyIdQuiz);
+router.put("/:id", protect, authorize(['teacher', 'admin']), updateQuiz);
+router.delete("/:id", protect, authorize(['teacher', 'admin']), deleteQuiz);
+router.patch('/:id/publish', protect, authorize(['teacher', 'admin']), publishQuiz);
+export default router;

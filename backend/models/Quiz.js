@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const quizSchema = new mongoose.Schema({
     course : {type: mongoose.Schema.Types.ObjectId, ref: "course", required: true},
     title : {type: String,required: true},
@@ -8,4 +8,4 @@ const quizSchema = new mongoose.Schema({
     isPublished : {type: Boolean,default: false},
     createdBy : {type: mongoose.Schema.Types.ObjectId, ref: "user"},
 }, {timestamps: true});
-module.exports = mongoose.model("quiz", quizSchema);
+export default mongoose.model("quiz", quizSchema);

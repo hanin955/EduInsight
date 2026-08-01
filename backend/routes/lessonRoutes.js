@@ -1,11 +1,12 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const lessonControllers = require("../controllers/lessonController.js");
-const authorize = require("../middlewares/roleMiddleware");
-const protect = require("../middlewares/authMiddleware");
-router.post("/ajouter",protect, authorize('teacher', 'admin'),lessonControllers.ajouterLesson);
-router.get("/lister",lessonControllers.listerLessons);
-router.get("/:id",lessonControllers.getbyIdLesson);
-router.put("/:id", protect, authorize('teacher', 'admin'),lessonControllers.updateLesson);
-router.delete("/:id",protect, authorize('teacher', 'admin'), lessonControllers.deleteLesson);
-module.exports = router;
+import { ajouterLesson, listerLessons, getbyIdLesson, updateLesson, deleteLesson } from "../controllers/lessonController.js";
+import authorize from "../middlewares/roleMiddleware.js";
+import protect from "../middlewares/authMiddleware.js";
+
+router.post("/ajouter", protect, authorize(['teacher', 'admin']), ajouterLesson);
+router.get("/lister", listerLessons);
+router.get("/:id", getbyIdLesson);
+router.put("/:id", protect, authorize(['teacher', 'admin']), updateLesson);
+router.delete("/:id", protect, authorize(['teacher', 'admin']), deleteLesson);
+export default router;

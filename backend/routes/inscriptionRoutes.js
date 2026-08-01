@@ -1,11 +1,12 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const inscriptionControllers = require("../controllers/inscriptionController.js");
-const authorize = require("../middlewares/roleMiddleware");
-const protect = require("../middlewares/authMiddleware");
-router.post("/ajouter", inscriptionControllers.ajouterInscription);
-router.get("/lister", protect, authorize('teacher', 'admin'),inscriptionControllers.listerInscriptions);
-router.get("/:id",protect, authorize('teacher', 'admin'), inscriptionControllers.getbyIdInscription);
-router.put("/:id", inscriptionControllers.updateInscription);
-router.delete("/:id", inscriptionControllers.deleteInscription);
-module.exports = router;
+import { ajouterInscription, listerInscriptions, getbyIdInscription, updateInscription, deleteInscription } from "../controllers/inscriptionController.js";
+import authorize from "../middlewares/roleMiddleware.js";
+import protect from "../middlewares/authMiddleware.js";
+
+router.post("/ajouter", ajouterInscription);
+router.get("/lister", protect, authorize(['teacher', 'admin']), listerInscriptions);
+router.get("/:id", protect, authorize(['teacher', 'admin']), getbyIdInscription);
+router.put("/:id", updateInscription);
+router.delete("/:id", deleteInscription);
+export default router;

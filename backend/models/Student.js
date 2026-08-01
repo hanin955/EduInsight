@@ -1,5 +1,5 @@
 const mongoose = require ("mongoose");
-const User = require("./User");
+import User from "./User.js";
 const studentSchema = mongoose.Schema({
     studentCode :{type : String,required : true, unique : true , maxlenght: 10, minlenght :5},
     level :{type : String, enum :["L1","L2","L3","M1","M2"]},

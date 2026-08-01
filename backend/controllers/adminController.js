@@ -1,5 +1,6 @@
 import { User, Admin, Teacher, Student } from '../models/User.js';
 import bcrypt from 'bcryptjs';
+
 export const createUser = async (req, res, next) => {
     try {
         const { email, password, role, ...rest } = req.body;
