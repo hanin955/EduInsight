@@ -3,9 +3,8 @@ const router = express.Router();
 import { ajouterInscription, listerInscriptions, getbyIdInscription, updateInscription, deleteInscription } from "../controllers/inscriptionController.js";
 import authorize from "../middlewares/roleMiddleware.js";
 import protect from "../middlewares/authMiddleware.js";
-
 router.post("/ajouter", ajouterInscription);
-router.get("/lister", protect, authorize(['teacher', 'admin']), listerInscriptions);
+router.get("/lister", protect, authorize(['teacher', 'admin','student']), listerInscriptions);
 router.get("/:id", protect, authorize(['teacher', 'admin']), getbyIdInscription);
 router.put("/:id", updateInscription);
 router.delete("/:id", deleteInscription);

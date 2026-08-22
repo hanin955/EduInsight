@@ -6,5 +6,4 @@ const performanceSchema = new mongoose.Schema({
     quizScoreAverage : {type: Number,default: 0},
     attendanceRate : {type: Number,default: 0},
 },{timestamps: {createdAt: true, updatedAt: false}});
-
 export default mongoose.model("PerformanceMetric", performanceSchema);

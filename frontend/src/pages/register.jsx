@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/axios';
 import { useAuth, getDashboardPath } from '../components/context/AuthContext';
-
 const Register = () => {
     const [form, setForm] = useState({
         firstName: '',
@@ -11,12 +10,13 @@ const Register = () => {
         password: '',
         confirmPassword: '',
         role: 'student',
+        speciality: '',
+        level: 'L1',
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const {user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
-
     const handleChange = (e) => {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
@@ -29,7 +29,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        const { firstName, lastName, email, password, confirmPassword, role } = form;
+        const { firstName, lastName, email, password, confirmPassword, role, speciality, level } = form;
         if (!firstName.trim()) {
             setError('Le prénom est requis');
             return;
@@ -58,18 +58,27 @@ const Register = () => {
             setError('Les mots de passe ne correspondent pas');
             return;
         }
+        if (!speciality.trim()) {
+            setError('La spécialité est requise');
+            return;
+        }
         setLoading(true);
         try {
-            await api.post('/auth/register', {
+            const payload = {
                 firstName: firstName.trim(),
                 lastName: lastName.trim(),
                 email: email.trim(),
                 password,
                 role,
+                speciality: speciality.trim(),
+            };
+            if (role === 'student') {
+                payload.level = level;
+            }
+            await api.post('/auth/register', payload);
+            navigate('/login', {
+                state: { message: "Inscription réussie ! Vous pouvez maintenant vous connecter." }
             });
-            navigate('/login', { 
-            state: { message: "Inscription réussie ! Vous pouvez maintenant vous connecter." } 
-        });
         } catch (err) {
             setLoading(false);
             setError(err.response?.data?.message || "Erreur lors de l'inscription.");
@@ -82,7 +91,6 @@ const Register = () => {
                     <div className='w-full lg:w-1/2 relative overflow-hidden bg-[#111827] p-12 flex flex-col justify-center border-r border-gray-800'>
                         <div className='pointer-events-none absolute -top-24 -left-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl'></div>
                         <div className='pointer-events-none absolute bottom-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl'></div>
-
                         <div className='relative z-10'>
                             <div className='flex items-center justify-between mb-10'>
                                 <div className='bg-[#0d1424] border border-blue-900/60 w-11 h-11 rounded-lg flex items-center justify-center'>
@@ -94,7 +102,6 @@ const Register = () => {
                                     Smart Education
                                 </span>
                             </div>
-
                             <h2 className='text-4xl font-semibold !text-white leading-tight' style={{ color: '#ffffff' }}>
                                 Empower every learner
                                 <br />
@@ -192,6 +199,33 @@ const Register = () => {
                                     </select>
                                 </div>
                                 <div>
+                                    <label className='block text-gray-300 text-sm mb-2 text-left'>Speciality</label>
+                                    <input
+                                        name="speciality"
+                                        type="text"
+                                        value={form.speciality}
+                                        onChange={handleChange}
+                                        placeholder="Enter your speciality"
+                                        className='w-full px-4 py-3 bg-[#0d1424] border border-gray-700 rounded-lg outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30 text-white placeholder-gray-500'
+                                    />
+                                </div>
+                                {form.role === 'student' && (
+                                    <div>
+                                        <label className='block text-gray-300 text-sm mb-2 text-left'>Level</label>
+                                        <select
+                                            name="level"
+                                            value={form.level}
+                                            onChange={handleChange}
+                                            className='w-full px-4 py-3 bg-[#0d1424] border border-gray-700 rounded-lg outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30 text-white'>
+                                            <option value="L1">L1</option>
+                                            <option value="L2">L2</option>
+                                            <option value="L3">L3</option>
+                                            <option value="M1">M1</option>
+                                            <option value="M2">M2</option>
+                                        </select>
+                                    </div>
+                                )}
+                                <div>
                                     <label className='block text-gray-300 text-sm mb-2 text-left'>Password</label>
                                     <input
                                         name="password"
@@ -199,8 +233,7 @@ const Register = () => {
                                         value={form.password}
                                         onChange={handleChange}
                                         placeholder="••••••••"
-                                        className='w-full px-4 py-3 bg-[#0d1424] border border-gray-700 rounded-lg outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30 text-white placeholder-gray-500'
-                                    />
+                                        className='w-full px-4 py-3 bg-[#0d1424] border border-gray-700 rounded-lg outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30 text-white placeholder-gray-500'/>
                                 </div>
                                 <div>
                                     <label className='block text-gray-300 text-sm mb-2 text-left'>Confirm password</label>

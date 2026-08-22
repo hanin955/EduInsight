@@ -1,8 +1,10 @@
-import User, { Teacher, Student } from "../models/User.js";
+import User from "../models/User.js";
+import Teacher from "../models/Teacher.js";
+import Student from "../models/Student.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
-    const { firstName, lastName, email, password, role } = req.body;
+    const { firstName, lastName, email, password, role, speciality, level, group, departement } = req.body;
     try {
         const UserExiste = await User.findOne({ email });
         if (UserExiste) {
@@ -11,16 +13,30 @@ export const register = async (req, res) => {
         const hashPassword = await bcrypt.hash(password, 10);
         const allowedRoles = ['student', 'teacher'];
         const finalRole = allowedRoles.includes(role) ? role : 'student';
-        const payload = {
+        const basePayload = {
             firstName,
             lastName,
             email,
+            speciality,
             password: hashPassword,
         };
         if (finalRole === 'teacher') {
-            await Teacher.create(payload);
+            if (!speciality) {
+                return res.status(400).json({ message: "La spécialité est requise pour un enseignant" });
+            }
+            await Teacher.create({
+                ...basePayload,
+                speciality,
+            });
         } else {
-            await Student.create(payload);
+            const studentCode = 'ETU' + Date.now().toString().slice(-8);
+            await Student.create({
+                ...basePayload,
+                studentCode,
+                level: level || undefined,
+                group: group || undefined,
+                departement: departement || undefined,
+            });
         }
         res.status(201).json({ message: "Inscription réussie" });
     } catch (err) {
@@ -65,8 +81,8 @@ export const updateProfile = async (req, res, next) => {
     try {
         const user = await User.findByIdAndUpdate(req.user.id, req.body, { new: true });
         res.status(200).json({ success: true, data: user });
-    } catch (error) { 
-        next(error); 
+    } catch (error) {
+        next(error);
     }
 };
 export const changePassword = async (req, res, next) => {
@@ -78,7 +94,7 @@ export const changePassword = async (req, res, next) => {
         user.password = await bcrypt.hash(newPassword, 10);
         await user.save();
         res.status(200).json({ success: true, message: 'Mot de passe mis à jour' });
-    } catch (error) { 
-        next(error); 
+    } catch (error) {
+        next(error);
     }
 };

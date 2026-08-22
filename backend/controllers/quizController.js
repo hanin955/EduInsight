@@ -1,7 +1,6 @@
 import quiz from "../models/Quiz.js";
 import Question from "../models/Question.js";
 import Choice from "../models/Choice.js";
-
 export const ajouterQuiz = async (req, res) => {
     try {
         const newQuiz = new quiz(req.body);
@@ -11,16 +10,22 @@ export const ajouterQuiz = async (req, res) => {
         res.status(400).json({ message: "Erreur lors de l'ajout du quiz", error: err.message });
     }
 };
-
 export const listerQuiz = async (req, res) => {
     try {
-        const quizzes = await quiz.find();
-        res.status(200).json(quizzes);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+        const filter = {};
+        if (req.query.createdBy) {
+            filter.createdBy = req.query.createdBy;
+        }
+        const quizzes = await quiz.find(filter).skip(skip).limit(limit);
+        const totalQuizzes = await quiz.countDocuments(filter);
+        res.status(200).json({quizzes,totalQuizzes,page,totalPages: Math.ceil(totalQuizzes / limit),limit});
     } catch (err) {
         res.status(500).json({ message: "Erreur lors de la récupération des quiz", error: err.message });
     }
 };
-
 export const getbyIdQuiz = async (req, res) => {
     try {
         const foundQuiz = await quiz.findById(req.params.id);

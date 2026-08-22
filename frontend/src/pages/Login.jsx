@@ -11,13 +11,11 @@ const Login = () => {
     useEffect(() => {
         emailRef.current?.focus();
     }, []);
-
     useEffect(() => {
         if (isAuthenticated && user) {
             navigate(getDashboardPath(user.role), { replace: true });
         }
     }, [isAuthenticated, user, navigate]);
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -51,7 +49,6 @@ const Login = () => {
             setError(result.message || 'Identifiants invalides.');
         }
     };
-
     return (
         <div className='flex items-center bg-white min-h-screen'>
             <div className='container mx-auto px-6 py-6'>
@@ -59,7 +56,6 @@ const Login = () => {
                     <div className='w-full lg:w-1/2 relative overflow-hidden bg-[#111827] p-12 flex flex-col justify-center border-r border-gray-800'>
                         <div className='pointer-events-none absolute -top-24 -left-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl'></div>
                         <div className='pointer-events-none absolute bottom-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl'></div>
-
                         <div className='relative z-10'>
                             <div className='flex items-center justify-between mb-10'>
                                 <div className='bg-[#0d1424] border border-blue-900/60 w-11 h-11 rounded-lg flex items-center justify-center'>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect,useMemo} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, getErrorMessage } from '../../api/axios';
 const AuthContext = createContext(null);
@@ -9,31 +9,31 @@ export const getDashboardPath = (role = '') => {
         case 'student':
             return '/student';
         case 'teacher':
-            return '/accueil';
+            return '/teacher';
         default:
             return '/login';
     }
 };
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(() => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
-
         if (storedToken && storedUser) {
             try {
-                return JSON.parse(storedUser);
-            } catch (error) {
-                console.error("Erreur lors de la lecture de l'utilisateur stocké :", error);
+                setUser(JSON.parse(storedUser));
+            } catch {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                return null;
             }
+        } else {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
         }
-        return null;
-    });
-    const [loading] = useState(false);
-    const navigate = useNavigate();
-
+        setLoading(false);
+    }, []);
     const register = async (userData) => {
         try {
             await api.post('/auth/register', userData);
@@ -42,10 +42,9 @@ export function AuthProvider({ children }) {
             return { success: false, message: getErrorMessage(error) };
         }
     };
-
-    const login = async (credentials) => {
+    const login = async (data) => {
         try {
-            const response = await api.post('/auth/login', credentials);
+            const response = await api.post('/auth/login', data);
             const token = response.data?.token;
             const loggedUser = response.data?.user;
             if (!token || !loggedUser) {
@@ -67,22 +66,22 @@ export function AuthProvider({ children }) {
         setUser(null);
         navigate('/login', { replace: true });
     };
-    const value = {
+    const value = useMemo(() => ({
         user,
         loading,
         login,
         register,
         logout,
         isAuthenticated: Boolean(user),
-    };
+    }), [user, loading]);
     return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
-}
+}// pour distribue les valeurs qui dans value a tous les composants enfants
 export function useAuth() {
-    const context = useContext(AuthContext);
+    const context = useContext(AuthContext);// lire les valeurs dans authContext 
     if (!context) {
         throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
     }

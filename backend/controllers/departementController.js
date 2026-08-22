@@ -12,8 +12,18 @@ export const ajouterDepartement = async (req, res) => {
 
 export const listerDepartements = async (req, res) => {
     try {
-        const departements = await departement.find();
-        res.status(200).json(departements);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 6;
+        const skip = (page - 1) * limit;
+        const departements = await departement.find().skip(skip).limit(limit);
+        const totalDepartements = await departement.countDocuments();
+        res.status(200).json({
+            departements,
+            totalDepartements,
+            page,
+            totalPages: Math.ceil(totalDepartements / limit),
+            limit
+        });
     } catch (err) {
         res.status(404).json({ message: "erreur lors de la récupération des departements" });
     }
