@@ -43,6 +43,16 @@ export default function QuizzesPage() {
   const handleQuizUpdated = (updatedQuiz) => {
     setQuizzes((prev) => prev.map((q) => (q._id === updatedQuiz._id ? updatedQuiz : q)));
   };
+  const handlePublish = async (quizId) => {
+    try {
+      await api.patch(`/quizzes/${quizId}/publish`);
+      setQuizzes((prev) =>
+        prev.map((q) => (q._id === quizId ? { ...q, isPublished: true } : q))
+      );
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  };
   const getCourseTitle = (courseId) => {
     const course = courses.find((c) => c._id === courseId || c._id === courseId?._id);
     return course?.title || '—';
@@ -82,6 +92,7 @@ export default function QuizzesPage() {
         getCourseTitle={getCourseTitle}
         countQuestions={countQuestions}
         onEditClick={setEditingQuiz}
+        onPublishClick={handlePublish}
       />
       {!loading && !error && (
         <div className="mt-4 flex items-center justify-between px-2">

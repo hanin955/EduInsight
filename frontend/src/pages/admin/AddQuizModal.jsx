@@ -74,13 +74,16 @@ export default function AddQuizModal({ onClose, onCreated, onUpdated, quiz }) {
       }
       return;
     }
+    // Convertit le texte du textarea en tableau JS et valide sa forme
+    // AVANT d'appeler l'API — évite de créer un quiz sans questions
+    // si l'utilisateur a mal formaté son JSON
     let parsedQuestions;
     try {
       parsedQuestions = JSON.parse(form.questionsJson);
       if (!Array.isArray(parsedQuestions)) throw new Error('Doit être un tableau');
     } catch (err) {
       setError('JSON invalide pour les questions : ' + err.message);
-      return;
+      return; // si le JSON est invalide, on ne continue pas
     }
     setSaving(true);
     try {
@@ -146,8 +149,7 @@ export default function AddQuizModal({ onClose, onCreated, onUpdated, quiz }) {
               required
               value={form.title}
               onChange={handleChange('title')}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-            />
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"/>
           </div>
           <div>
             <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -157,8 +159,7 @@ export default function AddQuizModal({ onClose, onCreated, onUpdated, quiz }) {
               required
               value={form.course}
               onChange={handleChange('course')}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-            >
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white">
               <option value="">-- Choisir --</option>
               {courses.map((c) => (
                 <option key={c._id} value={c._id}>
@@ -177,8 +178,7 @@ export default function AddQuizModal({ onClose, onCreated, onUpdated, quiz }) {
                 min="0"
                 value={form.duration}
                 onChange={handleChange('duration')}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              />
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"/>
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -190,8 +190,7 @@ export default function AddQuizModal({ onClose, onCreated, onUpdated, quiz }) {
                 max="100"
                 value={form.passingScore}
                 onChange={handleChange('passingScore')}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              />
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"/>
             </div>
           </div>
           {!isEditMode && (
@@ -203,8 +202,7 @@ export default function AddQuizModal({ onClose, onCreated, onUpdated, quiz }) {
                 rows={5}
                 value={form.questionsJson}
                 onChange={handleChange('questionsJson')}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-xs dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              />
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-xs dark:border-slate-700 dark:bg-slate-800 dark:text-white"/>
             </div>
           )}
           {isEditMode && (
@@ -217,15 +215,13 @@ export default function AddQuizModal({ onClose, onCreated, onUpdated, quiz }) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
+              className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
-            >
+              className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
               {saving ? 'Saving...' : isEditMode ? 'Save Changes' : 'Save'}
             </button>
           </div>

@@ -17,6 +17,7 @@ export default function QuizAttemptPage() {
   const [error, setError] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState(null);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [result, setResult] = useState(null);
   const [expired, setExpired] = useState(false);
   const [timeLeft, setTimeLeft] = useState(null);
@@ -135,18 +136,20 @@ export default function QuizAttemptPage() {
   };
 
   const handleChoiceClick = (questionId, choiceId) => {
-    if (submitting || expired) return;
+    if (submitting || expired || showFeedback) return;
     setSelectedChoice(choiceId);
+    setShowFeedback(true);
     const updatedAnswers = { ...answers, [questionId]: choiceId };
     setAnswers(updatedAnswers);
     setTimeout(() => {
       setSelectedChoice(null);
+      setShowFeedback(false);
       if (isLastQuestion) {
         finishQuiz(updatedAnswers);
       } else {
         setCurrentIndex((prev) => prev + 1);
       }
-    }, 300);
+    }, 1200);
   };
 
   if (loading) return <p className="text-sm text-slate-400">Chargement...</p>;
@@ -244,19 +247,35 @@ export default function QuizAttemptPage() {
         <div className="space-y-2">
           {questionChoices.map((choice) => {
             const isSelected = selectedChoice === choice._id;
+            const isCorrectChoice = choice.isCorrect;
+
+            let stateClasses =
+              'border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800';
+
+            if (showFeedback) {
+              if (isCorrectChoice) {
+                stateClasses =
+                  'border-green-500 bg-green-50 text-green-700 dark:border-green-500 dark:bg-green-950 dark:text-green-300';
+              } else if (isSelected && !isCorrectChoice) {
+                stateClasses =
+                  'border-red-500 bg-red-50 text-red-700 dark:border-red-500 dark:bg-red-950 dark:text-red-300';
+              } else {
+                stateClasses =
+                  'border-slate-200 opacity-50 dark:border-slate-700';
+              }
+            }
+
             return (
               <button
                 key={choice._id}
                 type="button"
-                disabled={submitting || selectedChoice !== null}
+                disabled={submitting || showFeedback}
                 onClick={() => handleChoiceClick(currentQuestion._id, choice._id)}
-                className={`flex w-full cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition disabled:cursor-not-allowed ${
-                  isSelected
-                    ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-950'
-                    : 'border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800'
-                }`}
+                className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left text-sm transition disabled:cursor-not-allowed ${stateClasses}`}
               >
                 <span className="text-slate-700 dark:text-slate-200">{choice.text}</span>
+                {showFeedback && isCorrectChoice && <span className="font-bold">✓</span>}
+                {showFeedback && isSelected && !isCorrectChoice && <span className="font-bold">✗</span>}
               </button>
             );
           })}

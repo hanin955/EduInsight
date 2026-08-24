@@ -57,6 +57,17 @@ export default function TeacherQuizzesPage() {
     setQuizzes((prev) => prev.map((q) => (q._id === updatedQuiz._id ? updatedQuiz : q)));
   };
 
+  const handlePublish = async (quizId) => {
+    try {
+      await api.patch(`/quizzes/${quizId}/publish`);
+      setQuizzes((prev) =>
+        prev.map((q) => (q._id === quizId ? { ...q, isPublished: true } : q))
+      );
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  };
+
   const getCourseTitle = (courseId) => {
     const course = courses.find((c) => c._id === courseId || c._id === courseId?._id);
     return course?.title || '—';
@@ -99,27 +110,28 @@ export default function TeacherQuizzesPage() {
               <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Quiz</th>
               <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Course</th>
               <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Questions</th>
+              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Status</th>
               <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading && (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400">
+                <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-400">
                   Chargement...
                 </td>
               </tr>
             )}
             {!loading && error && (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-sm text-red-500">
+                <td colSpan={5} className="px-6 py-8 text-center text-sm text-red-500">
                   {error}
                 </td>
               </tr>
             )}
             {!loading && !error && filteredQuizzes.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400">
+                <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-400">
                   Vous n'avez créé aucun quiz pour le moment.
                 </td>
               </tr>
@@ -141,12 +153,33 @@ export default function TeacherQuizzesPage() {
                     {countQuestions(quiz._id)}
                   </td>
                   <td className="px-6 py-4">
-                    <button
-                      onClick={() => setEditingQuiz(quiz)}
-                      className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
-                    >
-                      Edit
-                    </button>
+                    {quiz.isPublished ? (
+                      <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                        Published
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                        Draft
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      {!quiz.isPublished && (
+                        <button
+                          onClick={() => handlePublish(quiz._id)}
+                          className="rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-600 transition hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50"
+                        >
+                          Publish
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setEditingQuiz(quiz)}
+                        className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                      >
+                        Edit
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
