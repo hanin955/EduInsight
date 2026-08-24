@@ -3,6 +3,7 @@ import Answer from "../models/Answer.js";
 import Question from "../models/Question.js";
 import Choice from "../models/Choice.js";
 import Quiz from "../models/Quiz.js";
+import Inscription from "../models/Inscription.js";
 
 export const ajouterQuizAttempt = async (req, res) => {
     try {
@@ -66,6 +67,61 @@ export const takeQuiz = async (req, res, next) => {
     } catch (error) {
         console.error("Erreur dans takeQuiz:", error);
         next(error);
+    }
+};
+
+// Vérifie si l'étudiant a réussi (meilleur score >= passingScore) tous les quiz
+// publiés du cours, et marque l'inscription comme "completed" le cas échéant.
+const checkAndCompleteCourse = async (studentId, courseId) => {
+    const allCourseQuizzes = await Quiz.find({ course: courseId, isPublished: true });
+
+    // Garde de sécurité : si le cours n'a aucun quiz publié, on ne complète pas
+    // automatiquement (sinon every() sur un tableau vide renverrait true à tort).
+    if (allCourseQuizzes.length === 0) {
+        return;
+    }
+
+    const bestAttemptsPerQuiz = await QuizAttempt.aggregate([
+        {
+            $match: {
+                student: studentId,
+                status: 'completed',
+                quiz: { $in: allCourseQuizzes.map(q => q._id) }
+            }
+        },
+        {
+            $group: {
+                _id: "$quiz",
+                bestPercentage: { $max: "$percentage" }
+            }
+        }
+    ]);
+
+    const bestScoreMap = new Map(
+        bestAttemptsPerQuiz.map(a => [a._id.toString(), a.bestPercentage])
+    );
+
+    // Tous les quiz du cours doivent avoir été tentés au moins une fois
+    const allQuizzesAttempted = allCourseQuizzes.every(q => bestScoreMap.has(q._id.toString()));
+
+    if (!allQuizzesAttempted) {
+        return;
+    }
+
+    // Moyenne des meilleurs scores de chaque quiz du cours
+    const totalBestScores = allCourseQuizzes.reduce(
+        (sum, q) => sum + bestScoreMap.get(q._id.toString()),
+        0
+    );
+    const averageScore = totalBestScores / allCourseQuizzes.length;
+
+    const COURSE_PASSING_AVERAGE = 60;
+
+    if (averageScore >= COURSE_PASSING_AVERAGE) {
+        await Inscription.findOneAndUpdate(
+            { student: studentId, course: courseId, status: { $ne: 'completed' } },
+            { status: 'completed' }
+        );
     }
 };
 
@@ -151,6 +207,11 @@ export const submitAnswers = async (req, res, next) => {
         attempt.status = 'completed';
 
         await attempt.save();
+
+        // Après sauvegarde de la tentative, vérifier si ce quiz complète le cours
+        if (quiz && quiz.course) {
+            await checkAndCompleteCourse(attempt.student, quiz.course);
+        }
 
         res.status(200).json({
             success: true,

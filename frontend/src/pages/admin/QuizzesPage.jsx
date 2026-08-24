@@ -20,7 +20,7 @@ export default function QuizzesPage() {
       setLoading(true);
       const [quizzesRes, coursesRes, questionsRes] = await Promise.all([
         api.get('/quizzes/list', { params: { page: targetPage, limit } }),
-        api.get('/courses/list', { params: { limit: 1000 } }), // toutes les courses, pour résoudre les titres
+        api.get('/courses/list', { params: { limit: 1000 } }), 
         api.get('/questions/lister'),
       ]);
       setQuizzes(Array.isArray(quizzesRes.data.quizzes) ? quizzesRes.data.quizzes : []);

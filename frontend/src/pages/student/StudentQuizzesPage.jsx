@@ -47,7 +47,6 @@ export default function StudentQuizzesPage() {
       return aStudentId === studentId && aQuizId === quizId && a.submittedAt;
     });
     if (myAttempts.length === 0) return null;
-    // On utilise le pourcentage calculé par le backend (attempt.percentage), pas le score brut
     return Math.max(...myAttempts.map((a) => a.percentage ?? 0));
   };
 
