@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/axios';
 import { getErrorMessage } from '../../api/axios';
+import { getAvatarUrl } from '../../../utils/avatar';
 
 export default function TeacherStudentsPage() {
   const [rows, setRows] = useState([]);
@@ -74,6 +75,7 @@ export default function TeacherStudentsPage() {
           firstName: student?.firstName || '—',
           lastName: student?.lastName || '',
           email: student?.email || '—',
+          avatar: student?.avatar || null,
           enrolledCount: courseIds.length,
           avgGrade,
         };
@@ -160,8 +162,23 @@ export default function TeacherStudentsPage() {
                   key={row.id}
                   className="border-b border-slate-50 last:border-0 dark:border-slate-800/60"
                 >
-                  <td className="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
-                    {`${row.firstName} ${row.lastName}`.trim()}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={getAvatarUrl(row)}
+                        alt={`${row.firstName} ${row.lastName}`.trim()}
+                        className="h-8 w-8 rounded-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            `${row.firstName} ${row.lastName}`.trim()
+                          )}&background=e0e7ff&color=4338ca&bold=true`;
+                        }}
+                      />
+                      <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                        {`${row.firstName} ${row.lastName}`.trim()}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
                     {row.email}
@@ -184,7 +201,7 @@ export default function TeacherStudentsPage() {
             disabled={page <= 1}
             className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-800 dark:text-slate-300"
           >
-            Précédent
+            Previous
           </button>
           <span className="text-sm text-slate-500 dark:text-slate-400">
             Page {page} / {totalPages}
@@ -194,7 +211,7 @@ export default function TeacherStudentsPage() {
             disabled={page >= totalPages}
             className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-800 dark:text-slate-300"
           >
-            Suivant
+            Next
           </button>
         </div>
       )}

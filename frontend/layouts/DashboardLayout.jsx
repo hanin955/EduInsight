@@ -1,14 +1,15 @@
 import Header from '../src/components/Header';
 import Sidebar from '../src/components/Sidebar';
 import { useAuth } from '../src/components/context/AuthContext';
+
 export default function DashboardLayout({ title, subtitle, menus, children }) {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   return (
     <div className="fixed inset-0 flex overflow-hidden bg-slate-50 dark:bg-slate-950">
       <div className="flex w-full flex-col lg:flex-row">
-        <Sidebar menus={menus} user={user} onLogout={logout} />
+        <Sidebar menus={menus} user={user} onLogout={logout} onUserUpdate={updateUser} />
         <div className="flex flex-1 flex-col overflow-hidden">
-          <Header title={title} subtitle={subtitle} />
+          <Header title={title} subtitle={subtitle} user={user} />
           <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
             {children}
           </main>

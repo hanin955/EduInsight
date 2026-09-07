@@ -7,5 +7,6 @@ const courseSchema = new mongoose.Schema({
     duration : {type : Number},
     level : String,
     image : String,
+    pdf : String,
 },{timestamps : true});
 export default mongoose.models.Course || mongoose.model('Course', courseSchema);

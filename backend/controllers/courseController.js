@@ -1,5 +1,6 @@
 import Course from '../models/course.js';
 import Inscription from '../models/Inscription.js'; 
+
 export const ajouterCourse = async (req, res) => {
     try {
         const { title, description, departement, teacher, duration, level } = req.body;
@@ -11,7 +12,8 @@ export const ajouterCourse = async (req, res) => {
             teacher: teacherId,
             duration,
             level,
-            image: req.file ? req.file.filename : 'cours.jpg'
+            image: req.files?.image?.[0] ? req.files.image[0].filename : 'cours.jpg',
+            pdf: req.files?.pdf?.[0] ? req.files.pdf[0].filename : undefined,
         });
         await newCourse.save();
         res.status(201).json({ message: "Course ajouté avec succès", course: newCourse });
@@ -19,6 +21,7 @@ export const ajouterCourse = async (req, res) => {
         res.status(400).json({ message: "Erreur lors de l'ajout de la course", error: err.message });
     }
 };
+
 export const listerCourses = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -35,6 +38,7 @@ export const listerCourses = async (req, res) => {
         res.status(500).json({ message: "Erreur lors de la récupération des courses", error: err.message });
     }
 };
+
 export const listerbyIdCourse = async (req, res) => {
     try {
         const course = await Course.findById(req.params.id).populate('teacher', 'firstName lastName name email');
@@ -46,11 +50,15 @@ export const listerbyIdCourse = async (req, res) => {
         res.status(500).json({ message: "Erreur lors de la récupération du course", error: err.message });
     }
 };
+
 export const updateCourse = async (req, res) => {
     try {
         const updateData = { ...req.body };
-        if (req.file) {
-            updateData.image = req.file.filename;
+        if (req.files?.image?.[0]) {
+            updateData.image = req.files.image[0].filename;
+        }
+        if (req.files?.pdf?.[0]) {
+            updateData.pdf = req.files.pdf[0].filename;
         }
         const updatedCourse = await Course.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
         if (!updatedCourse) {
@@ -61,6 +69,7 @@ export const updateCourse = async (req, res) => {
         res.status(500).json({ message: "Erreur lors de la mise à jour du course", error: err.message });
     }
 };
+
 export const deleteCourse = async (req, res) => {
     try {
         const deletedCourse = await Course.findByIdAndDelete(req.params.id);
@@ -72,6 +81,7 @@ export const deleteCourse = async (req, res) => {
         res.status(500).json({ message: "Erreur lors de la suppression du course", error: err.message });
     }
 };
+
 export const enrollCourse = async (req, res, next) => {
     try {
         const inscription = await Inscription.create({ student: req.user.id, course: req.params.id });

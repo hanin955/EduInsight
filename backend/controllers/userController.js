@@ -1,4 +1,6 @@
 import bcrypt from "bcryptjs";
+import fs from "fs";
+import path from "path";
 import User from "../models/User.js";
 import Teacher from "../models/Teacher.js";
 import Student from "../models/Student.js";
@@ -56,6 +58,7 @@ export const listerUtilisateurs = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 export const getUtilisateurById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -69,15 +72,33 @@ export const getUtilisateurById = async (req, res) => {
 };
 export const updateUtilisateur = async (req, res) => {
     try {
+        if (req.user.role !== "admin" && req.user.id !== req.params.id) {
+            if (req.file) fs.unlinkSync(req.file.path); 
+            return res.status(403).json({ message: "Non autorisé à modifier cet utilisateur" });
+        }
         const updateData = { ...req.body };
+        if (req.user.role !== "admin") {
+            delete updateData.role;
+            delete updateData.isActive;
+        }
+
         if (req.file) {
+            const existingUser = await User.findById(req.params.id);
+            if (existingUser?.avatar) {
+                const oldPath = path.join(process.cwd(), "uploads", existingUser.avatar);
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath);
+                }
+            }
             updateData.avatar = req.file.filename;
         }
+
         if (updateData.password) {
             updateData.password = await bcrypt.hash(updateData.password, 10);
         } else {
             delete updateData.password;
         }
+
         const updatedUtilisateur = await User.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
         if (!updatedUtilisateur) {
             return res.status(404).json({ message: "Utilisateur non trouvé" });
@@ -87,11 +108,18 @@ export const updateUtilisateur = async (req, res) => {
         res.status(500).json({ message: "Erreur lors de la mise à jour de l'utilisateur", error: err.message });
     }
 };
+
 export const deleteUtilisateur = async (req, res) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
         if (!deletedUser) {
             return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+        if (deletedUser.avatar) {
+            const avatarPath = path.join(process.cwd(), "uploads", deletedUser.avatar);
+            if (fs.existsSync(avatarPath)) {
+                fs.unlinkSync(avatarPath);
+            }
         }
         res.json({ message: "Utilisateur supprimé avec succès" });
     } catch (err) {

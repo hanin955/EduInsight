@@ -13,8 +13,20 @@ export const ajouterModule = async (req, res) => {
 
 export const listerModules = async (req, res) => {
     try {
-        const modules = await moduleModel.find();
-        res.status(200).json(modules);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const [modules, totalModules] = await Promise.all([
+            moduleModel.find().skip(skip).limit(limit),
+            moduleModel.countDocuments()
+        ]);
+        res.status(200).json({
+            modules,
+            totalModules,
+            page,
+            totalPages: Math.ceil(totalModules / limit),
+            limit
+        });
     } catch (err) {
         res.status(500).json({ message: "Erreur lors de la récupération des modules", error: err.message });
     }

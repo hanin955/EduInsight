@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../api/axios';
 import { getErrorMessage } from '../../api/axios';
+
+const fileBaseUrl = api.defaults.baseURL.replace(/\/api\/?$/, '');
+
 export default function StudentCourseDetailPage() {
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -17,7 +20,7 @@ export default function StudentCourseDetailPage() {
         const [courseRes, modulesRes, lessonsRes] = await Promise.all([
           api.get(`/courses/${courseId}`),
           api.get('/modules/lister'),
-          api.get('/lessons/lister'),
+          api.get('/lessons/lister-tout'),
         ]);
         setCourse(courseRes.data);
         const allModules = Array.isArray(modulesRes.data) ? modulesRes.data : [];
@@ -38,9 +41,6 @@ export default function StudentCourseDetailPage() {
     lessons
       .filter((l) => (l.module?._id || l.module) === moduleId)
       .sort((a, b) => (a.order || 0) - (b.order || 0));
-  const openLink = (url) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
   if (loading) {
     return <p className="text-sm text-slate-400">Chargement...</p>;
   }
@@ -67,6 +67,17 @@ export default function StudentCourseDetailPage() {
             : ''}
           {course.duration ? ` - ${course.duration}h` : ''}
         </p>
+        {course.pdf && (
+          <a
+            href={`${fileBaseUrl}/uploads/${course.pdf}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+          >
+            ⬇ Télécharger le support du cours
+          </a>
+        )}
       </div>
       <div className="space-y-4">
         {modules.length === 0 && (
@@ -95,26 +106,17 @@ export default function StudentCourseDetailPage() {
                       className="flex items-center justify-between border-b border-slate-50 px-6 py-3 last:border-0 dark:border-slate-800/60"
                     >
                       <span className="text-sm text-slate-700 dark:text-slate-200">{lesson.title}</span>
-                      <div className="flex gap-3 text-xs">
-                        {lesson.videoUrl ? (
-                          <button
-                            type="button"
-                            onClick={() => openLink(lesson.videoUrl)}
-                            className="rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300"
-                          >
-                            Video
-                          </button>
-                        ) : null}
-                        {lesson.pdfUrl ? (
-                          <button
-                            type="button"
-                            onClick={() => openLink(lesson.pdfUrl)}
-                            className="rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300"
-                          >
-                            PDF
-                          </button>
-                        ) : null}
-                      </div>
+                      {lesson.pdfUrl && (
+                        <a
+                          href={`${fileBaseUrl}/uploads/${lesson.pdfUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300"
+                        >
+                          ⬇ PDF
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>

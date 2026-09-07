@@ -3,6 +3,7 @@ import Teacher from "../models/Teacher.js";
 import Student from "../models/Student.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
 export const register = async (req, res) => {
     const { firstName, lastName, email, password, role, speciality, level, group, departement } = req.body;
     try {
@@ -43,6 +44,7 @@ export const register = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
 export const login = async (req, res, next) => {
     const { email, password } = req.body;
     try {
@@ -67,16 +69,19 @@ export const login = async (req, res, next) => {
                 lastName: user.lastName,
                 email: user.email,
                 role: user.role,
+                avatar: user.avatar,
             }
         });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
+
 export const logout = async (req, res) => {
     res.clearCookie('token');
     res.status(200).json({ success: true, message: 'Déconnexion réussie' });
 };
+
 export const updateProfile = async (req, res, next) => {
     try {
         const user = await User.findByIdAndUpdate(req.user.id, req.body, { new: true });
@@ -85,6 +90,7 @@ export const updateProfile = async (req, res, next) => {
         next(error);
     }
 };
+
 export const changePassword = async (req, res, next) => {
     try {
         const { currentPassword, newPassword } = req.body;

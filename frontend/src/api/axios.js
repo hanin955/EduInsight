@@ -8,7 +8,7 @@ api.interceptors.request.use(
         const token = localStorage.getItem('token');
         const isPublicRoute = PUBLIC_ROUTES.some((route) => config.url?.endsWith(route));
     if (token && !isPublicRoute) {
-        config.headers = config.headers || {};// si header existe ou non
+        config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -18,7 +18,6 @@ api.interceptors.request.use(
     }
 );
 
-// Intercepteur de réponse : déconnecte automatiquement si le token est invalide/expiré
 api.interceptors.response.use(
     (response) => response,
     (error) => {

@@ -6,6 +6,7 @@ import StudentQuizzesPage from './StudentQuizzesPage';
 import StudentProgressPage from './StudentProgressPage';
 import CertificatesPage from './CertificatesPage';
 import QuizAttemptPage from './QuizAttemptPage';
+import DocsPage from '../admin/DocsPage';
 import { BookOpen, Puzzle, BarChart2, Award, FileText } from 'lucide-react';
 const studentMenus = [
   { label: 'My Courses', link: '/Student/My_Courses', icon: BookOpen },
@@ -35,7 +36,7 @@ export default function StudentDashboard() {
         <Route path="/My_Progress" element={<StudentProgressPage />} />
         <Route path="/Certificates" element={<CertificatesPage />} />
         <Route path="/My_Quizzes/attempt/:attemptId" element={<QuizAttemptPage />} />
-        <Route path="/Docs" element={<div>Page Docs</div>} />
+        <Route path="/Docs" element={<DocsPage />} />
       </Routes>
     </DashboardLayout>
   );

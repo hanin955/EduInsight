@@ -21,15 +21,22 @@ import recommendationRoutes from "./routes/recommendationRoutes.js";
 import inscriptionRoutes from "./routes/inscriptionRoutes.js";
 import performanceMetricRoutes from "./routes/performanceMetricRoutes.js";
 import statisticsRoutes from "./routes/statisticsRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import documentRoutes from "./routes/documentRoutes.js";
+
 dotenv.config();
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 connectDB();
+
+app.use('/api/chat', chatRoutes);
 app.use('/api/statistics', statisticsRoutes);
 app.use("/admin", adminRoutes);
-app.use("/uploads", express.static(path.join(path.resolve(), "/uploads")));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
@@ -46,6 +53,11 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/recommendations", recommendationRoutes);
 app.use("/api/inscriptions", inscriptionRoutes);
 app.use("/api/performancemetrics", performanceMetricRoutes);
+app.use("/api/documents", documentRoutes);
+app.use((err, req, res, next) => {
+    console.error("Erreur globale interceptée:", err);
+    res.status(500).json({ message: err.message || "Erreur serveur inattendue" });
+});
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server lancé sur http://localhost:${PORT}`);

@@ -80,7 +80,7 @@ export default function StudentsPage() {
             disabled={page <= 1}
             className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-800 dark:text-slate-300"
           >
-            Précédent
+            Previous
           </button>
           <span className="text-sm text-slate-500 dark:text-slate-400">
             Page {page} / {totalPages}
@@ -90,7 +90,7 @@ export default function StudentsPage() {
             disabled={page >= totalPages}
             className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-800 dark:text-slate-300"
           >
-            Suivant
+            Next
           </button>
         </div>
       )}

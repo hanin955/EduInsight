@@ -1,7 +1,44 @@
-import { Data} from '../../components/statcard';
+import { useRef, useState } from 'react';
+import { Data } from '../../components/statcard';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 function CertificateCard({ studentName, courseTitle, grade, date }) {
+  const cardRef = useRef(null);
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+      });
+      const imgData = canvas.toDataURL('image/png');
+
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [canvas.width, canvas.height],
+      });
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+
+      const safeCourseName = courseTitle.replace(/[^a-z0-9]/gi, '_');
+      pdf.save(`Certificat_${safeCourseName}.pdf`);
+    } catch (err) {
+      console.error('Erreur lors de la génération du certificat', err);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
-    <div className="mb-6 rounded-2xl border-2 border-amber-300 bg-gradient-to-b from-amber-50 to-white p-10 text-center shadow-sm dark:border-amber-700 dark:from-amber-950/30 dark:to-slate-900">
+    <div
+      ref={cardRef}
+      className="mb-6 rounded-2xl border-2 border-amber-300 bg-gradient-to-b from-amber-50 to-white p-10 text-center shadow-sm dark:border-amber-700 dark:from-amber-950/30 dark:to-slate-900"
+    >
       <div className="mb-4 flex justify-center">
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-3xl dark:bg-amber-900/40">
           🏅
@@ -16,12 +53,17 @@ function CertificateCard({ studentName, courseTitle, grade, date }) {
       <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">{courseTitle}</p>
       <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Grade: {grade}%</p>
       <p className="text-sm text-slate-600 dark:text-slate-300">Date: {date}</p>
-      <button className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
-        ⬇ Download
+      <button
+        onClick={handleDownload}
+        disabled={downloading}
+        className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+      >
+        {downloading ? 'Génération...' : '⬇ Download'}
       </button>
     </div>
   );
 }
+
 export default function CertificatesPage() {
   const { courses, inscriptions, metrics, loading, error } = Data({
     courses: true,
@@ -36,7 +78,7 @@ export default function CertificatesPage() {
     }
   })();
   const studentId = currentUser?.id;
-  const studentName = currentUser? `${currentUser.firstName ?? ''} ${currentUser.lastName ?? ''}`.trim(): '';
+  const studentName = currentUser ? `${currentUser.firstName ?? ''} ${currentUser.lastName ?? ''}`.trim() : '';
   const myCompletedInscriptions = inscriptions.filter(
     (ins) =>
       (ins.student === studentId || ins.student?._id === studentId) &&

@@ -4,9 +4,9 @@ import { ajouterUtilisateur, listerUtilisateurs, getUtilisateurById, updateUtili
 import protect from "../middlewares/authMiddleware.js";
 import authorize from "../middlewares/roleMiddleware.js";
 import upload from "../middlewares/upload.js";
-router.post("/ajouter", upload.single("avatar"), ajouterUtilisateur);
-router.get("/list", protect, authorize(["admin","teacher"]), listerUtilisateurs);
-router.get("/:id", getUtilisateurById);
-router.put("/:id", upload.single("avatar"), updateUtilisateur);
-router.delete("/:id", deleteUtilisateur);
+router.post("/ajouter", protect, authorize(["admin"]), upload.single("avatar"), ajouterUtilisateur);
+router.get("/list", protect, authorize(["admin", "teacher"]), listerUtilisateurs);
+router.get("/:id", protect, getUtilisateurById);
+router.put("/:id", protect, upload.single("avatar"), updateUtilisateur);
+router.delete("/:id", protect, authorize(["admin"]), deleteUtilisateur);
 export default router;

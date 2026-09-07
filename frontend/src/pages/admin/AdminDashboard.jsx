@@ -9,14 +9,19 @@ import StudentsPage from './StudentsPage';
 import SettingsPage from './SettingsPage';
 import AnalyticsPage from './AnalyticsPage';
 import DepartementsPage from './DepartementsPage';
+import ModulesPage from './ModulesPage';
+import LessonsPage from './LessonsPage';
+import DocsPage from './DocsPage';
 import StatCard, { Data } from '../../components/statcard';
 import PlatformGrowthChart from '../../components/dashboard/PlatformGrowthChart';
 import UserByRoleChart from '../../components/dashboard/UserByRoleChart';
-import { PieChart, Users, BookOpen, Puzzle, GraduationCap, BarChart2, FileText, Settings, Building2 } from 'lucide-react';
+import { PieChart, Users, BookOpen, Puzzle, GraduationCap, BarChart2, FileText, Settings, Building2, Layers, PlaySquare } from 'lucide-react';
 const adminMenus = [
   { label: 'Dashboard', link: '/Admin', icon: PieChart },
   { label: 'Users', link: '/Admin/Users', icon: Users },
   { label: 'Courses', link: '/Admin/Courses', icon: BookOpen },
+  { label: 'Modules', link: '/Admin/Modules', icon: Layers },
+  { label: 'Lessons', link: '/Admin/Lessons', icon: PlaySquare },
   { label: 'Quizzes', link: '/Admin/Quizzes', icon: Puzzle },
   { label: 'Students', link: '/Admin/Students', icon: GraduationCap },
   { label: 'Departements', link: '/Admin/Departements', icon: Building2 },
@@ -28,10 +33,12 @@ const pageInfo = {
   '/Admin': { title: 'Admin Dashboard', subtitle: 'Overview' },
   '/Admin/Users': { title: 'User Management', subtitle: 'Manage users' },
   '/Admin/Courses': { title: 'Courses', subtitle: 'Manage courses' },
+  '/Admin/Modules': { title: 'Modules', subtitle: 'Manage modules' },
+  '/Admin/Lessons': { title: 'Lessons', subtitle: 'Manage lessons' },
   '/Admin/Quizzes': { title: 'Quizzes', subtitle: 'Manage quizzes' },
   '/Admin/Students': { title: 'Students', subtitle: 'Manage students' },
   '/Admin/Departements': { title: 'Departements', subtitle: 'Manage departements' },
-  '/Admin/Analytics': { title: 'Analytics', subtitle: 'Platform insights' },
+  '/Admin/Analytics': { title: 'Analytics', subtitle: 'Platform EduInsights' },
   '/Admin/Docs': { title: 'Docs', subtitle: 'Documentation' },
   '/Admin/Settings': { title: 'Settings', subtitle: 'Platform settings' },
 };
@@ -114,10 +121,12 @@ export default function AdminDashboard() {
         <Route path="/Users" element={<UsersPage />} />
         <Route path="/Quizzes" element={<QuizzesPage />} />
         <Route path="/Courses" element={<CoursesPage />} />
+        <Route path="/Modules" element={<ModulesPage />} />
+        <Route path="/Lessons" element={<LessonsPage />} />
         <Route path="/Students" element={<StudentsPage />} />
         <Route path="/Departements" element={<DepartementsPage />} />
         <Route path="/Analytics" element={<AnalyticsPage />} />
-        <Route path="/Docs" element={<div>Page Docs</div>} />
+        <Route path="/Docs" element={<DocsPage />} />
         <Route path="/Settings" element={<SettingsPage />} />
       </Routes>
     </DashboardLayout>

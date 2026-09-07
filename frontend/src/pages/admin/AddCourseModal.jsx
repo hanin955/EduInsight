@@ -9,10 +9,11 @@ const Form = {
   duration: '',
   level: 'beginner',
   image: null,
+  pdf: null,
 };
 export default function AddCourseModal({ onClose, onCreated, onUpdated, course }) {
   const isEditMode = Boolean(course);
-  const [form, setForm] = useState(//cette partie pour declarer l'état initial du formulaire, si c'est un mode édition on prend les valeurs du cours sinon form(vide)
+  const [form, setForm] = useState(
     isEditMode
       ? {
           title: course.title || '',
@@ -22,6 +23,7 @@ export default function AddCourseModal({ onClose, onCreated, onUpdated, course }
           duration: course.duration || '',
           level: course.level || 'beginner',
           image: null,
+          pdf: null,
         }
       : Form
   );
@@ -51,7 +53,7 @@ export default function AddCourseModal({ onClose, onCreated, onUpdated, course }
     loadOptions();
   }, []);
   const handleChange = (field) => (e) => {
-    const value = field === 'image' ? e.target.files[0] : e.target.value;
+    const value = field === 'image' || field === 'pdf' ? e.target.files[0] : e.target.value;
     setForm((prev) => ({ ...prev, [field]: value }));
   };
   const handleSubmit = async (e) => {
@@ -67,6 +69,7 @@ export default function AddCourseModal({ onClose, onCreated, onUpdated, course }
       formData.append('duration', form.duration);
       formData.append('level', form.level);
       if (form.image) formData.append('image', form.image);
+      if (form.pdf) formData.append('pdf', form.pdf);
       if (isEditMode) {
         const response = await api.put(`/courses/${course._id}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -189,6 +192,21 @@ export default function AddCourseModal({ onClose, onCreated, onUpdated, course }
               accept="image/*"
               onChange={handleChange('image')}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"/>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
+              PDF du cours {isEditMode && <span className="font-normal">(laisser vide pour ne pas changer)</span>}
+            </label>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={handleChange('pdf')}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"/>
+            {isEditMode && course.pdf && (
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                PDF actuel disponible — choisissez un fichier pour le remplacer.
+              </p>
+            )}
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex justify-end gap-2 pt-2">
