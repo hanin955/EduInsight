@@ -25,8 +25,7 @@ export default function TeacherLessonsPage() {
     const loadData = async () => {
     try {
         setLoading(true);
-        const [lessonsRes, modulesRes, coursesRes] = await Promise.all([
-        api.get('/lessons/lister-tout'),
+        const [modulesRes, coursesRes] = await Promise.all([
         api.get('/modules/lister', { params: { limit: 1000 } }),
         api.get('/courses/list', { params: { limit: 1000, teacher: teacherId } }),
         ]);
@@ -34,12 +33,10 @@ export default function TeacherLessonsPage() {
         const myCourseIds = myCourses.map((c) => c._id);
         const allModules = Array.isArray(modulesRes.data.modules) ? modulesRes.data.modules : [];
         const myModules = allModules.filter((m) => myCourseIds.includes(m.course?._id || m.course));
-        const myModuleIds = myModules.map((m) => m._id);
         setModules(myModules);
-        const allLessons = Array.isArray(lessonsRes.data) ? lessonsRes.data : [];
-        setLessons(
-        allLessons.filter((l) => myModuleIds.includes(l.module?._id || l.module))
-        );
+        // derive lessons from embedded lessons inside modules
+        const derivedLessons = myModules.flatMap((m) => (Array.isArray(m.lessons) ? m.lessons.map((l) => ({ ...l, module: m._id })) : []));
+        setLessons(derivedLessons);
     } catch (err) {
         setError(getErrorMessage(err));
     } finally {

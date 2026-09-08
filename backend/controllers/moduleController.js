@@ -16,10 +16,30 @@ export const listerModules = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-        const [modules, totalModules] = await Promise.all([
-            moduleModel.find().skip(skip).limit(limit),
-            moduleModel.countDocuments()
+        const courseId = req.query.course;
+        const filter = {};
+        if (courseId) filter.course = courseId;
+
+        const [modulesDocs, totalModules] = await Promise.all([
+            moduleModel.find(filter).skip(skip).limit(limit)
+                .populate({ path: 'course', populate: { path: 'teacher', select: 'firstName lastName email' } }).sort({ order: 1 }),
+            moduleModel.countDocuments(filter)
         ]);
+
+        // attach lessons for each module
+        const modules = modulesDocs.map((m) => m.toObject());
+        const moduleIds = modules.map((m) => m._id);
+        const lessonsList = await lesson.find({ module: { $in: moduleIds } }).sort({ order: 1 });
+        const lessonsByModule = lessonsList.reduce((acc, l) => {
+            const key = String(l.module);
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(l);
+            return acc;
+        }, {});
+        modules.forEach((m) => {
+            m.lessons = lessonsByModule[String(m._id)] || [];
+        });
+
         res.status(200).json({
             modules,
             totalModules,

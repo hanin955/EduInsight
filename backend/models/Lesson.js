@@ -5,6 +5,6 @@ const lessonSchema = new mongoose.Schema({
     videoUrl : String,
     pdfUrl : String,
     order :{type : Number,default: 0},
-    module : {type: mongoose.Schema.Types.ObjectId, ref: "module",required: true}
+    module : {type: mongoose.Schema.Types.ObjectId, ref: "Module", required: true}
 }, {timestamps: true});
-export default mongoose.model("lesson", lessonSchema);
+export default mongoose.model("Lesson", lessonSchema);

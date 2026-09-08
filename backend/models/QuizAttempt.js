@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const quizAttemptSchema = new mongoose.Schema({
-    student : {type: mongoose.Schema.Types.ObjectId, ref: "user",required : true},
-    quiz : {type: mongoose.Schema.Types.ObjectId, ref: "quiz",required : true},
+    student : {type: mongoose.Schema.Types.ObjectId, ref: "User", required : true},
+    quiz : {type: mongoose.Schema.Types.ObjectId, ref: "Quiz", required : true},
     score : {type: Number,default : 0},
     totalQuestions : {type: Number,default : 0},
     totalPoints : {type: Number, default: 0},
@@ -15,4 +15,4 @@ const quizAttemptSchema = new mongoose.Schema({
         default: 'in_progress'
     }
 }, {timestamps: true});
-export default mongoose.model("quizAttempt", quizAttemptSchema);
+export default mongoose.model("QuizAttempt", quizAttemptSchema);

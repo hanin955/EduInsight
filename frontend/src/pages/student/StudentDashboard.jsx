@@ -2,6 +2,7 @@ import { useLocation, Routes, Route } from 'react-router-dom';
 import DashboardLayout from '../../../layouts/DashboardLayout';
 import StudentCoursesPage from './StudentCoursesPage';
 import StudentCourseDetailPage from './StudentCourseDetailPage';
+import StudentLessonPage from './StudentLessonPage';
 import StudentQuizzesPage from './StudentQuizzesPage';
 import StudentProgressPage from './StudentProgressPage';
 import CertificatesPage from './CertificatesPage';
@@ -32,6 +33,7 @@ export default function StudentDashboard() {
         <Route path="/" element={<StudentCoursesPage />} />
         <Route path="/My_Courses" element={<StudentCoursesPage />} />
         <Route path="/My_Courses/:courseId" element={<StudentCourseDetailPage />} />
+        <Route path="/My_Courses/:courseId/lesson/:lessonId" element={<StudentLessonPage />} />
         <Route path="/My_Quizzes" element={<StudentQuizzesPage />} />
         <Route path="/My_Progress" element={<StudentProgressPage />} />
         <Route path="/Certificates" element={<CertificatesPage />} />
