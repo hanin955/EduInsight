@@ -35,6 +35,9 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
+// Health check for hosting platforms
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
 app.use('/api/chat', chatRoutes);
 app.use('/api/statistics', statisticsRoutes);
 app.use("/admin", adminRoutes);
