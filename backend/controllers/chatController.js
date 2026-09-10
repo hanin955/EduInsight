@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Student from "../models/Student.js";
-import Course from "../models/Course.js";
+import Course from "../models/course.js";
 import Inscription from "../models/Inscription.js";
 import QuizAttempt from "../models/QuizAttempt.js";
 import { generateChatResponse } from "../services/aiService.js";

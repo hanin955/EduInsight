@@ -6,7 +6,7 @@ import User from './models/User.js';
 import Admin from './models/admin.js';
 import Teacher from './models/Teacher.js';
 import Student from './models/Student.js';
-import Course from './models/Course.js';
+import Course from './models/course.js';
 import Module from './models/Module.js';
 import Lesson from './models/Lesson.js';
 import Quiz from './models/Quiz.js';

@@ -1,4 +1,4 @@
-import Course from '../models/Course.js';
+import Course from '../models/course.js';
 import Student from '../models/Student.js';
 import Inscription from '../models/Inscription.js';
 import PerformanceMetric from '../models/PerformanceMetric.js';

@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import Document from "../models/Document.js";
 import Inscription from "../models/Inscription.js";
-import Course from "../models/Course.js";
+import Course from "../models/course.js";
 
 export const uploadDocument = async (req, res) => {
     try {
