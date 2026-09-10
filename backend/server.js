@@ -63,8 +63,12 @@ app.use("/api/documents", documentRoutes);
 if (process.env.NODE_ENV === 'production') {
     const frontendDist = path.join(process.cwd(), '..', 'frontend', 'dist');
     app.use(express.static(frontendDist));
-    app.get('/*', (req, res) => {
-        res.sendFile(path.join(frontendDist, 'index.html'));
+    // Serve SPA index.html for non-API GET requests (avoid path-to-regexp patterns)
+    app.use((req, res, next) => {
+        if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
+            return res.sendFile(path.join(frontendDist, 'index.html'));
+        }
+        next();
     });
 }
 app.use((err, req, res, next) => {
