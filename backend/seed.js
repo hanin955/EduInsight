@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import Department from './models/Department.js';
 import User from './models/User.js';
-import Admin from './models/Admin.js';
+import Admin from './models/admin.js';
 import Teacher from './models/Teacher.js';
 import Student from './models/Student.js';
 import Course from './models/Course.js';

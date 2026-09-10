@@ -1,4 +1,4 @@
-import Course from '../models/course.js';
+import Course from '../models/Course.js';
 import Inscription from '../models/Inscription.js'; 
 
 export const ajouterCourse = async (req, res) => {
