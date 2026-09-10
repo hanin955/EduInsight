@@ -28,6 +28,8 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
+const CLIENT_URL = process.env.CLIENT_URL || '*';
+app.use(cors({ origin: CLIENT_URL }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -54,6 +56,14 @@ app.use("/api/recommendations", recommendationRoutes);
 app.use("/api/inscriptions", inscriptionRoutes);
 app.use("/api/performancemetrics", performanceMetricRoutes);
 app.use("/api/documents", documentRoutes);
+// Serve frontend in production when a build exists
+if (process.env.NODE_ENV === 'production') {
+    const frontendDist = path.join(process.cwd(), '..', 'frontend', 'dist');
+    app.use(express.static(frontendDist));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(frontendDist, 'index.html'));
+    });
+}
 app.use((err, req, res, next) => {
     console.error("Erreur globale interceptée:", err);
     res.status(500).json({ message: err.message || "Erreur serveur inattendue" });
