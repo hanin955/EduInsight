@@ -1,6 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { api, getErrorMessage } from '../../api/axios';
 import { getAvatarUrl } from '../../../utils/avatar';
+<<<<<<< HEAD
+=======
+
+>>>>>>> e6fd4e4 (les fichiers modifies)
 function StateBox({ tone = 'default', children }) {
   const toneClass = tone === 'error' ? 'text-red-500' : 'text-slate-400';
   return (
@@ -9,6 +13,10 @@ function StateBox({ tone = 'default', children }) {
     </div>
   );
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e6fd4e4 (les fichiers modifies)
 function Avatar({ row }) {
   return (
     <img
@@ -18,12 +26,20 @@ function Avatar({ row }) {
       onError={(e) => {
         e.currentTarget.onerror = null;
         e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+<<<<<<< HEAD
           `${row.firstName}${row.lastName}`.trim()
+=======
+          `${row.firstName} ${row.lastName}`.trim()
+>>>>>>> e6fd4e4 (les fichiers modifies)
         )}&background=e0e7ff&color=4338ca&bold=true`;
       }}
     />
   );
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e6fd4e4 (les fichiers modifies)
 export default function TeacherStudentsPage() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -143,14 +159,26 @@ export default function TeacherStudentsPage() {
           className="w-full max-w-xs rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         />
       </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> e6fd4e4 (les fichiers modifies)
       {loading ? (
         <StateBox>Chargement...</StateBox>
       ) : error ? (
         <StateBox tone="error">{error}</StateBox>
+<<<<<<< HEAD
       ) : filteredRows.length === 0 ? (
         <StateBox>Aucun étudiant trouvé.</StateBox>
       ) : (
         <>
+=======
+      ) : paginatedRows.length === 0 ? (
+        <StateBox>Aucun étudiant inscrit à vos cours pour le moment.</StateBox>
+      ) : (
+        <>
+          {/* Table view - tablette & PC */}
+>>>>>>> e6fd4e4 (les fichiers modifies)
           <div className="hidden overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:block">
             <table className="w-full min-w-[600px] text-left">
               <thead>
@@ -189,6 +217,11 @@ export default function TeacherStudentsPage() {
               </tbody>
             </table>
           </div>
+<<<<<<< HEAD
+=======
+
+          {/* Card view - mobile */}
+>>>>>>> e6fd4e4 (les fichiers modifies)
           <div className="space-y-3 md:hidden">
             {paginatedRows.map((row) => (
               <div
@@ -215,7 +248,12 @@ export default function TeacherStudentsPage() {
           </div>
         </>
       )}
+<<<<<<< HEAD
       {!loading && !error && filteredRows.length > 0 && (
+=======
+
+      {!loading && !error && (
+>>>>>>> e6fd4e4 (les fichiers modifies)
         <div className="mt-4 flex items-center justify-between px-2">
           <button
             type="button"

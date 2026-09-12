@@ -1,5 +1,9 @@
 import StatCard, { Data } from '../../components/statcard';
+<<<<<<< HEAD
 import GradeHistoryChart from '../../components/Dashboard/GradeHistoryChart';
+=======
+import GradeHistoryChart from '../../components/dashboard/GradeHistoryChart';
+>>>>>>> e6fd4e4 (les fichiers modifies)
 
 function StatusBadge({ status }) {
   const styles = {
