@@ -32,9 +32,50 @@ function StatusBadge({ status }) {
   };
   const labels = { enrolled: 'Enrolled', completed: 'Completed', available: 'Available' };
   return (
-    <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${styles[status]}`}>
+    <span className={`inline-block shrink-0 rounded-full px-3 py-1 text-xs font-medium ${styles[status]}`}>
       {labels[status]}
     </span>
+  );
+}
+
+function ActionButton({ status, courseId, enrollingId, onEnroll, onContinue, onReview }) {
+  if (status === 'available') {
+    return (
+      <button
+        onClick={() => onEnroll(courseId)}
+        disabled={enrollingId === courseId}
+        className="rounded-full bg-blue-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-50"
+      >
+        {enrollingId === courseId ? '...' : 'Enroll'}
+      </button>
+    );
+  }
+  if (status === 'enrolled') {
+    return (
+      <button
+        onClick={() => onContinue(courseId)}
+        className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+      >
+        Continue
+      </button>
+    );
+  }
+  return (
+    <button
+      onClick={() => onReview(courseId)}
+      className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+    >
+      Review
+    </button>
+  );
+}
+
+function StateBox({ tone = 'default', children }) {
+  const toneClass = tone === 'error' ? 'text-red-500' : 'text-slate-400';
+  return (
+    <div className={`rounded-2xl border border-slate-100 bg-white p-8 text-center text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900 ${toneClass}`}>
+      {children}
+    </div>
   );
 }
 
@@ -120,92 +161,101 @@ export default function StudentCoursesPage() {
         <StatCard label="Completed" value={loading ? '...' : completedCount} />
         <StatCard label="Avg Grade" value={loading ? '...' : `${avgGrade}%`} />
       </div>
-      <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b border-slate-100 dark:border-slate-800">
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Course</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Instructor</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Status</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400">
-                  Chargement...
-                </td>
-              </tr>
-            )}
-            {!loading && error && (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-sm text-red-500">
-                  {error}
-                </td>
-              </tr>
-            )}
-            {!loading && !error && paginatedCourses.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400">
-                  Aucun cours disponible.
-                </td>
-              </tr>
-            )}
-            {!loading &&
-              !error &&
-              paginatedCourses.map((course) => {
-                const status = getStatus(course._id);
-                return (
-                  <tr
-                    key={course._id}
-                    className="border-b border-slate-50 last:border-0 dark:border-slate-800/60"
-                  >
-                    <td className="flex items-center gap-3 px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
-                      <CourseThumbnail image={course.image} title={course.title} />
-                      {course.title}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                      {course.teacher
-                        ? `${course.teacher.firstName ?? ''} ${course.teacher.lastName ?? ''}`.trim()
-                        : '—'}
-                    </td>
-                    <td className="px-6 py-4">
-                      <StatusBadge status={status} />
-                    </td>
-                    <td className="px-6 py-4">
-                      {status === 'available' && (
-                        <button
-                          onClick={() => handleEnroll(course._id)}
-                          disabled={enrollingId === course._id}
-                          className="rounded-full bg-blue-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-50"
-                        >
-                          {enrollingId === course._id ? '...' : 'Enroll'}
-                        </button>
-                      )}
-                      {status === 'enrolled' && (
-                        <button
-                          onClick={() => handleContinue(course._id)}
-                          className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
-                        >
-                          Continue
-                        </button>
-                      )}
-                      {status === 'completed' && (
-                        <button
-                          onClick={() => handleReview(course._id)}
-                          className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
-                        >
-                          Review
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-      </div>
+
+      {loading ? (
+        <StateBox>Chargement...</StateBox>
+      ) : error ? (
+        <StateBox tone="error">{error}</StateBox>
+      ) : paginatedCourses.length === 0 ? (
+        <StateBox>Aucun cours disponible.</StateBox>
+      ) : (
+        <>
+          {/* Table view - tablette & PC */}
+          <div className="hidden overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:block">
+            <table className="w-full min-w-[640px] text-left">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-slate-800">
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Course</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Instructor</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Status</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedCourses.map((course) => {
+                  const status = getStatus(course._id);
+                  return (
+                    <tr
+                      key={course._id}
+                      className="border-b border-slate-50 last:border-0 dark:border-slate-800/60"
+                    >
+                      <td className="flex items-center gap-3 px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
+                        <CourseThumbnail image={course.image} title={course.title} />
+                        {course.title}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                        {course.teacher
+                          ? `${course.teacher.firstName ?? ''} ${course.teacher.lastName ?? ''}`.trim()
+                          : '—'}
+                      </td>
+                      <td className="px-6 py-4">
+                        <StatusBadge status={status} />
+                      </td>
+                      <td className="px-6 py-4">
+                        <ActionButton
+                          status={status}
+                          courseId={course._id}
+                          enrollingId={enrollingId}
+                          onEnroll={handleEnroll}
+                          onContinue={handleContinue}
+                          onReview={handleReview}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Card view - mobile */}
+          <div className="space-y-3 md:hidden">
+            {paginatedCourses.map((course) => {
+              const status = getStatus(course._id);
+              return (
+                <div
+                  key={course._id}
+                  className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <div className="flex items-center gap-3">
+                    <CourseThumbnail image={course.image} title={course.title} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{course.title}</p>
+                      <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                        {course.teacher
+                          ? `${course.teacher.firstName ?? ''} ${course.teacher.lastName ?? ''}`.trim()
+                          : '—'}
+                      </p>
+                    </div>
+                    <StatusBadge status={status} />
+                  </div>
+                  <div className="mt-3 flex justify-end border-t border-slate-50 pt-3 dark:border-slate-800/60">
+                    <ActionButton
+                      status={status}
+                      courseId={course._id}
+                      enrollingId={enrollingId}
+                      onEnroll={handleEnroll}
+                      onContinue={handleContinue}
+                      onReview={handleReview}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
       {!loading && !error && (
         <div className="mt-4 flex items-center justify-between px-2">
           <button

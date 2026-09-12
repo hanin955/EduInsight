@@ -3,6 +3,31 @@ import { api } from '../../api/axios';
 import { getErrorMessage } from '../../api/axios';
 import { getAvatarUrl } from '../../../utils/avatar';
 
+function StateBox({ tone = 'default', children }) {
+  const toneClass = tone === 'error' ? 'text-red-500' : 'text-slate-400';
+  return (
+    <div className={`rounded-2xl border border-slate-100 bg-white p-8 text-center text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900 ${toneClass}`}>
+      {children}
+    </div>
+  );
+}
+
+function Avatar({ row }) {
+  return (
+    <img
+      src={getAvatarUrl(row)}
+      alt={`${row.firstName} ${row.lastName}`.trim()}
+      className="h-8 w-8 shrink-0 rounded-full object-cover"
+      onError={(e) => {
+        e.currentTarget.onerror = null;
+        e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          `${row.firstName} ${row.lastName}`.trim()
+        )}&background=e0e7ff&color=4338ca&bold=true`;
+      }}
+    />
+  );
+}
+
 export default function TeacherStudentsPage() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -123,77 +148,83 @@ export default function TeacherStudentsPage() {
           className="w-full max-w-xs rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         />
       </div>
-      <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b border-slate-100 dark:border-slate-800">
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Student</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Email</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Enrolled</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Avg Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400">
-                  Chargement...
-                </td>
-              </tr>
-            )}
-            {!loading && error && (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-sm text-red-500">
-                  {error}
-                </td>
-              </tr>
-            )}
-            {!loading && !error && paginatedRows.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400">
-                  Aucun étudiant inscrit à vos cours pour le moment.
-                </td>
-              </tr>
-            )}
-            {!loading &&
-              !error &&
-              paginatedRows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-slate-50 last:border-0 dark:border-slate-800/60"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={getAvatarUrl(row)}
-                        alt={`${row.firstName} ${row.lastName}`.trim()}
-                        className="h-8 w-8 rounded-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            `${row.firstName} ${row.lastName}`.trim()
-                          )}&background=e0e7ff&color=4338ca&bold=true`;
-                        }}
-                      />
-                      <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                        {`${row.firstName} ${row.lastName}`.trim()}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                    {row.email}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                    {row.enrolledCount}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                    {row.avgGrade !== null ? `${row.avgGrade}%` : '—'}
-                  </td>
+
+      {loading ? (
+        <StateBox>Chargement...</StateBox>
+      ) : error ? (
+        <StateBox tone="error">{error}</StateBox>
+      ) : paginatedRows.length === 0 ? (
+        <StateBox>Aucun étudiant inscrit à vos cours pour le moment.</StateBox>
+      ) : (
+        <>
+          {/* Table view - tablette & PC */}
+          <div className="hidden overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:block">
+            <table className="w-full min-w-[600px] text-left">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-slate-800">
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Student</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Email</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Enrolled</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Avg Grade</th>
                 </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {paginatedRows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="border-b border-slate-50 last:border-0 dark:border-slate-800/60"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <Avatar row={row} />
+                        <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                          {`${row.firstName} ${row.lastName}`.trim()}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                      {row.email}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                      {row.enrolledCount}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                      {row.avgGrade !== null ? `${row.avgGrade}%` : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Card view - mobile */}
+          <div className="space-y-3 md:hidden">
+            {paginatedRows.map((row) => (
+              <div
+                key={row.id}
+                className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+              >
+                <div className="flex items-center gap-3">
+                  <Avatar row={row} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                      {`${row.firstName} ${row.lastName}`.trim()}
+                    </p>
+                    <p className="truncate text-xs text-slate-500 dark:text-slate-400">{row.email}</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between border-t border-slate-50 pt-3 text-xs text-slate-500 dark:border-slate-800/60 dark:text-slate-400">
+                  <span>{row.enrolledCount} cours suivis</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-200">
+                    {row.avgGrade !== null ? `${row.avgGrade}%` : '—'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
       {!loading && !error && (
         <div className="mt-4 flex items-center justify-between px-2">
           <button
