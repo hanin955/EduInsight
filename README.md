@@ -26,3 +26,23 @@ The frontend Vercel configuration is in `frontend/vercel.json`. The backend stor
 cd frontend && npm ci && npm run build
 cd ../backend && npm ci --omit=dev && npm start
 ```
+
+### Seed demo data
+
+`backend/seed.js` clears the configured database before inserting demo departments, users, courses, lessons, quizzes, and related records. Run it only against a new or disposable database.
+
+Locally, create `backend/.env` with a MongoDB connection string, then run:
+
+```text
+cd backend
+npm ci --omit=dev
+npm run seed
+```
+
+For the deployed Render database, open the backend service's Shell and run:
+
+```text
+npm run seed
+```
+
+The service must have `MONGO_URI` configured in Render first. Demo accounts use the password `Password123`; change these credentials before using seeded data in a real environment.
