@@ -22,9 +22,12 @@ import Recommendation from './models/Recommendation.js';
 import Notification from './models/Notification.js';
 dotenv.config();
 dotenv.config();
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/eduinsight';
+const MONGO_URI = process.env.MONGO_URI;
 const seedDatabase = async () => {
     try {
+        if (!MONGO_URI) {
+            throw new Error('MONGO_URI is required. Set it to your MongoDB Atlas connection string before seeding.');
+        }
         await mongoose.connect(MONGO_URI);
         console.log('🔌 Connecté à MongoDB...');
     await Promise.all([
