@@ -4,6 +4,15 @@ import { api } from '../../api/axios';
 import { getErrorMessage } from '../../api/axios';
 import { Data } from '../../components/statcard';
 
+function StateBox({ tone = 'default', children }) {
+  const toneClass = tone === 'error' ? 'text-red-500' : 'text-slate-400';
+  return (
+    <div className={`rounded-2xl border border-slate-100 bg-white p-8 text-center text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900 ${toneClass}`}>
+      {children}
+    </div>
+  );
+}
+
 export default function StudentQuizzesPage() {
   const navigate = useNavigate();
   const { courses, inscriptions, quizzes, attempts, loading, error, reload } = Data({
@@ -73,74 +82,90 @@ export default function StudentQuizzesPage() {
 
   return (
     <div>
-      <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b border-slate-100 dark:border-slate-800">
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Course</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Quiz</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Questions</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Best Score</th>
-              <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
-              <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-400">
-                  Chargement...
-                </td>
-              </tr>
-            )}
-            {!loading && error && (
-              <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-sm text-red-500">
-                  {error}
-                </td>
-              </tr>
-            )}
-            {!loading && !error && paginatedQuizzes.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-400">
-                  Aucun quiz disponible pour vos cours.
-                </td>
-              </tr>
-            )}
-            {!loading &&
-              !error &&
-              paginatedQuizzes.map((quiz) => {
-                const bestScore = getBestScore(quiz._id);
-                return (
-                  <tr
-                    key={quiz._id}
-                    className="border-b border-slate-50 last:border-0 dark:border-slate-800/60"
-                  >
-                    <td className="px-6 py-4 text-sm text-slate-900 dark:text-white">
-                      {getCourseTitle(quiz.course)}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
-                      {quiz.title}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                      —
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                      {bestScore !== null ? `${bestScore}%` : '—'}
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleStart(quiz._id)}
-                        className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
-                      >
-                        Start
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-      </div>
+      {loading ? (
+        <StateBox>Chargement...</StateBox>
+      ) : error ? (
+        <StateBox tone="error">{error}</StateBox>
+      ) : paginatedQuizzes.length === 0 ? (
+        <StateBox>Aucun quiz disponible pour vos cours.</StateBox>
+      ) : (
+        <>
+          {/* Table view - tablette & PC */}
+          <div className="hidden overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:block">
+            <table className="w-full min-w-[680px] text-left">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-slate-800">
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Course</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Quiz</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Questions</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Best Score</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedQuizzes.map((quiz) => {
+                  const bestScore = getBestScore(quiz._id);
+                  return (
+                    <tr
+                      key={quiz._id}
+                      className="border-b border-slate-50 last:border-0 dark:border-slate-800/60"
+                    >
+                      <td className="px-6 py-4 text-sm text-slate-900 dark:text-white">
+                        {getCourseTitle(quiz.course)}
+                      </td>
+                      <td className="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
+                        {quiz.title}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">—</td>
+                      <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                        {bestScore !== null ? `${bestScore}%` : '—'}
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => handleStart(quiz._id)}
+                          className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                        >
+                          Start
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Card view - mobile */}
+          <div className="space-y-3 md:hidden">
+            {paginatedQuizzes.map((quiz) => {
+              const bestScore = getBestScore(quiz._id);
+              return (
+                <div
+                  key={quiz._id}
+                  className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{quiz.title}</p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    {getCourseTitle(quiz.course)}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between border-t border-slate-50 pt-3 dark:border-slate-800/60">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      Best: {bestScore !== null ? `${bestScore}%` : '—'}
+                    </span>
+                    <button
+                      onClick={() => handleStart(quiz._id)}
+                      className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                    >
+                      Start
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
       {!loading && !error && (
         <div className="mt-4 flex items-center justify-between px-2">
           <button

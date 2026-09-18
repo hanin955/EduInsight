@@ -26,11 +26,21 @@ function LevelBadge({ level }) {
     const style = levelStyles[key] || levelStyles.beginner;
     const label = level ? level.charAt(0).toUpperCase() + level.slice(1) : 'N/A';
     return (
-        <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${style}`}>
+        <span className={`inline-block shrink-0 rounded-full px-3 py-1 text-xs font-medium ${style}`}>
         {label}
         </span>
     );
 }
+
+function StateBox({ tone = 'default', children }) {
+    const toneClass = tone === 'error' ? 'text-red-500' : 'text-slate-400';
+    return (
+        <div className={`rounded-2xl border border-slate-100 bg-white p-8 text-center text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900 ${toneClass}`}>
+            {children}
+        </div>
+    );
+}
+
 export default function CoursesTable({
     courses,
     loading,
@@ -39,77 +49,103 @@ export default function CoursesTable({
     onEdit,
     onDelete,
 }) {
+    if (loading) return <StateBox>Chargement...</StateBox>;
+    if (error) return <StateBox tone="error">{error}</StateBox>;
+    if (courses.length === 0) return <StateBox>Aucun cours trouvé.</StateBox>;
+
     return (
-    <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <table className="w-full text-left">
-            <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800">
-                    <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Course</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Instructor</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Students</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Level</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Actions</th>
-                </tr>
-        </thead>
-        <tbody>
-            {loading && (
-            <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-400">
-                Chargement...
-                </td>
-            </tr>
-            )}
-            {!loading && error && (
-            <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-sm text-red-500">
-                    {error}
-                </td>
-            </tr>
-            )}
-            {!loading && !error && courses.length === 0 && (
-            <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-400">
-                    Aucun cours trouvé.
-                </td>
-            </tr>
-            )}
-            {!loading &&!error &&courses.map((course) => (
-                <tr
-                    key={course._id}
-                    className="border-b border-slate-50 last:border-0 dark:border-slate-800/60">
-                <td className="flex items-center gap-3 px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
-                    <CourseThumbnail image={course.image} title={course.title} />
-                    {course.title}
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                    {course.teacher? `${course.teacher.firstName ?? ''} ${course.teacher.lastName ?? ''}`.trim(): '—'}
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                    {countStudents(course._id)}
-                </td>
-                <td className="px-6 py-4">
-                    <LevelBadge level={course.level} />
-                </td>
-                <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => onEdit(course)}
-                            className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+        <>
+            {/* Table view - tablette & PC */}
+            <div className="hidden overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:block">
+                <table className="w-full min-w-[760px] text-left">
+                    <thead>
+                        <tr className="border-b border-slate-100 dark:border-slate-800">
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Course</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Instructor</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Students</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Level</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {courses.map((course) => (
+                            <tr
+                                key={course._id}
+                                className="border-b border-slate-50 last:border-0 dark:border-slate-800/60">
+                            <td className="flex items-center gap-3 px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
+                                <CourseThumbnail image={course.image} title={course.title} />
+                                {course.title}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                {course.teacher ? `${course.teacher.firstName ?? ''} ${course.teacher.lastName ?? ''}`.trim() : '—'}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                {countStudents(course._id)}
+                            </td>
+                            <td className="px-6 py-4">
+                                <LevelBadge level={course.level} />
+                            </td>
+                            <td className="px-6 py-4">
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => onEdit(course)}
+                                        className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => onDelete(course._id)}
+                                    className="rounded-full bg-red-50 px-4 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                                >
+                                    Del
+                                </button>
+                                </div>
+                            </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Card view - mobile */}
+            <div className="space-y-3 md:hidden">
+                {courses.map((course) => (
+                    <div
+                        key={course._id}
+                        className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                     >
-                        Edit
-                    </button>
-                    <button
-                        onClick={() => onDelete(course._id)}
-                        className="rounded-full bg-red-50 px-4 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
-                    >
-                        Del
-                    </button>
+                        <div className="flex items-center gap-3">
+                            <CourseThumbnail image={course.image} title={course.title} />
+                            <div className="min-w-0 flex-1">
+                                <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{course.title}</p>
+                                <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                                    {course.teacher ? `${course.teacher.firstName ?? ''} ${course.teacher.lastName ?? ''}`.trim() : '—'}
+                                </p>
+                            </div>
+                            <LevelBadge level={course.level} />
+                        </div>
+                        <div className="mt-3 flex items-center justify-between border-t border-slate-50 pt-3 dark:border-slate-800/60">
+                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                                {countStudents(course._id)} students
+                            </span>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => onEdit(course)}
+                                    className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => onDelete(course._id)}
+                                    className="rounded-full bg-red-50 px-4 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                                >
+                                    Del
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </td>
-                </tr>
-            ))}
-        </tbody>
-        </table>
-    </div>
+                ))}
+            </div>
+        </>
     );
 }

@@ -86,9 +86,9 @@ const Register = () => {
     };
     return (
         <div className='flex items-center bg-white min-h-screen'>
-            <div className='container mx-auto px-6 py-6'>
+            <div className='container mx-auto px-4 sm:px-6 py-6'>
                 <div className='flex flex-col lg:flex-row rounded-xl shadow-xl overflow-hidden bg-white border border-slate-200'>
-                    <div className='w-full lg:w-1/2 relative overflow-hidden bg-white p-12 flex flex-col justify-center border-r border-slate-200'>
+                    <div className='w-full lg:w-1/2 relative overflow-hidden bg-white p-6 sm:p-8 lg:p-12 flex flex-col justify-center border-r border-slate-200'>
                         <div className='pointer-events-none absolute -top-24 -left-24 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl'></div>
                         <div className='pointer-events-none absolute bottom-0 right-0 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl'></div>
                         <div className='relative z-10'>
@@ -102,7 +102,7 @@ const Register = () => {
                                     Smart Education
                                 </span>
                             </div>
-                            <h2 className='text-4xl font-semibold leading-tight text-blue-900'>
+                            <h2 className='text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight text-blue-900'>
                                 Empower every learner
                                 <br />
                                 with actionable insights.
@@ -133,7 +133,7 @@ const Register = () => {
                             </div>
                         </div>
                     </div>
-                    <div className='w-full lg:w-1/2 bg-white p-12'>
+                    <div className='w-full lg:w-1/2 bg-white p-6 sm:p-8 lg:p-12'>
                         <div className='flex flex-col'>
                             <div className='flex items-center justify-between'>
                                 <div>
@@ -151,7 +151,7 @@ const Register = () => {
                                 </div>
                             </div>
                             <form className='mt-8 flex flex-col gap-4' onSubmit={handleSubmit}>
-                                <div className='grid grid-cols-2 gap-4'>
+                                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                                     <div>
                                         <label className='block text-blue-900 text-sm mb-2 text-left font-medium'>Prénom</label>
                                         <input
