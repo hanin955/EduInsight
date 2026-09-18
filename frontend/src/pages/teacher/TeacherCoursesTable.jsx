@@ -1,11 +1,11 @@
-const BACKEND_URL = 'http://localhost:5000';
+import { API_ORIGIN } from '../../api/axios';
 function CourseThumbnail({ image, title }) {
     if (!image) {
         return (
             <div className="flex h-10 w-14 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs text-slate-400 dark:bg-slate-800"> —</div>);}
     return (
         <img
-            src={`${BACKEND_URL}/uploads/${image}`}
+            src={`${API_ORIGIN}/uploads/${image}`}
             alt={title}
             className="h-10 w-14 shrink-0 rounded-lg object-cover"
             onError={(e) => {

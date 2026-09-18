@@ -28,9 +28,8 @@ import documentRoutes from "./routes/documentRoutes.js";
 dotenv.config();
 const app = express();
 
-app.use(cors());
 const CLIENT_URL = process.env.CLIENT_URL || '*';
-app.use(cors({ origin: CLIENT_URL }));
+app.use(cors({ origin: CLIENT_URL === '*' ? true : CLIENT_URL }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

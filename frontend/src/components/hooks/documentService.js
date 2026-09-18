@@ -1,5 +1,4 @@
-import { api } from '../../api/axios';
-const API_ORIGIN = "http://localhost:5000";
+import { api, API_ORIGIN } from '../../api/axios';
 export const listMyDocuments = () => api.get('/documents').then((res) => res.data);
 export const uploadDocument = (file, title) => {
     const formData = new FormData();

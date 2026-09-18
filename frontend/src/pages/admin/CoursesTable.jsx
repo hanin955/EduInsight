@@ -1,4 +1,4 @@
-const BACKEND_URL = 'http://localhost:5000';
+import { API_ORIGIN } from '../../api/axios';
 const levelStyles = {
     beginner: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
     intermediate: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
@@ -14,7 +14,7 @@ function CourseThumbnail({ image, title }) {
     }
     return (
         <img
-            src={`${BACKEND_URL}/uploads/${image}`}
+            src={`${API_ORIGIN}/uploads/${image}`}
             alt={title}
             className="h-10 w-14 shrink-0 rounded-lg object-cover"
             onError={(e) => { e.target.style.display = 'none'; }}
