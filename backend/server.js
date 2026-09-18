@@ -36,6 +36,11 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 // Health check for hosting platforms
+app.get('/', (req, res) => res.json({
+    service: 'EduInsight API',
+    status: 'ok',
+    health: '/api/health'
+}));
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/chat', chatRoutes);
