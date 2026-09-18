@@ -1,4 +1,4 @@
-import RecommendationBell from './recommendations/RecommendationBell';
+import RecommendationBell from './recommendations/recommendationBell';
 import { Bell } from 'lucide-react';
 export default function Header({ title, subtitle, user }) {
   return (

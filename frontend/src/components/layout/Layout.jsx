@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import Chatbot from '../ai/Chatbot';
-import ChatbotButton from '../ai/ChatbotButton';
+import Chatbot from '../ai/chatbot';
+import ChatbotButton from '../ai/chatbotButton';
 import { useCurrentStudent } from '../hooks/useCurrentStudent';
 import { useState } from 'react';
 
