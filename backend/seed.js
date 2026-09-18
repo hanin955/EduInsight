@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
+import readline from 'readline/promises';
+import { stdin as input, stdout as output } from 'process';
 import Department from './models/Department.js';
 import User from './models/User.js';
 import Admin from './models/admin.js';
@@ -22,13 +24,20 @@ import Recommendation from './models/Recommendation.js';
 import Notification from './models/Notification.js';
 dotenv.config();
 dotenv.config();
-const MONGO_URI = process.env.MONGO_URI;
+const getMongoUri = async () => {
+    if (process.env.MONGO_URI) return process.env.MONGO_URI;
+    const prompt = readline.createInterface({ input, output });
+    const mongoUri = await prompt.question('Paste your MongoDB Atlas URI: ');
+    prompt.close();
+    return mongoUri.trim();
+};
 const seedDatabase = async () => {
     try {
-        if (!MONGO_URI) {
-            throw new Error('MONGO_URI is required. Set it to your MongoDB Atlas connection string before seeding.');
+        const mongoUri = await getMongoUri();
+        if (!mongoUri) {
+            throw new Error('A MongoDB Atlas URI is required before seeding.');
         }
-        await mongoose.connect(MONGO_URI);
+        await mongoose.connect(mongoUri);
         console.log('🔌 Connecté à MongoDB...');
     await Promise.all([
         Department.deleteMany({}), User.deleteMany({}), Course.deleteMany({}),
