@@ -13,8 +13,8 @@ import ModulesPage from './ModulesPage';
 import LessonsPage from './LessonsPage';
 import DocsPage from './DocsPage';
 import StatCard, { Data } from '../../components/statcard';
-import PlatformGrowthChart from '../../components/dashboard/PlatformGrowthChart';
-import UserByRoleChart from '../../components/dashboard/UserByRoleChart';
+import PlatformGrowthChart from '../../components/Dashboard/PlatformGrowthChart';
+import UserByRoleChart from '../../components/Dashboard/UserByRoleChart';
 import { PieChart, Users, BookOpen, Puzzle, GraduationCap, BarChart2, FileText, Settings, Building2, Layers, PlaySquare } from 'lucide-react';
 const adminMenus = [
   { label: 'Dashboard', link: '/Admin', icon: PieChart },
