@@ -17,18 +17,13 @@ export default function StudentCourseDetailPage() {
     const loadData = async () => {
       try {
         setLoading(true);
-        const [courseRes, modulesRes, lessonsRes] = await Promise.all([
+        const [courseRes, modulesRes] = await Promise.all([
           api.get(`/courses/${courseId}`),
-          api.get('/modules/lister'),
-          api.get('/lessons/lister-tout'),
+          api.get('/modules/lister', { params: { course: courseId, limit: 1000 } }),
         ]);
         setCourse(courseRes.data);
-        const allModules = Array.isArray(modulesRes.data) ? modulesRes.data : [];
-        const courseModules = allModules
-          .filter((m) => (m.course?._id || m.course) === courseId)
-          .sort((a, b) => (a.order || 0) - (b.order || 0));
-        setModules(courseModules);
-        setLessons(Array.isArray(lessonsRes.data) ? lessonsRes.data : []);
+        const modulesData = modulesRes.data && Array.isArray(modulesRes.data.modules) ? modulesRes.data.modules : [];
+        setModules(modulesData.sort((a, b) => (a.order || 0) - (b.order || 0)));
       } catch (err) {
         setError(getErrorMessage(err));
       } finally {
@@ -37,10 +32,7 @@ export default function StudentCourseDetailPage() {
     };
     loadData();
   }, [courseId]);
-  const getLessonsForModule = (moduleId) =>
-    lessons
-      .filter((l) => (l.module?._id || l.module) === moduleId)
-      .sort((a, b) => (a.order || 0) - (b.order || 0));
+  const getLessonsForModule = (module) => (module.lessons || []).sort((a, b) => (a.order || 0) - (b.order || 0));
   if (loading) {
     return <p className="text-sm text-slate-400">Chargement...</p>;
   }
@@ -84,7 +76,7 @@ export default function StudentCourseDetailPage() {
           <p className="text-sm text-slate-400">Aucun module disponible pour ce cours.</p>
         )}
         {modules.map((module) => {
-          const moduleLessons = getLessonsForModule(module._id);
+          const moduleLessons = getLessonsForModule(module);
           return (
             <div
               key={module._id}
@@ -100,25 +92,32 @@ export default function StudentCourseDetailPage() {
                 <p className="px-6 py-4 text-sm text-slate-400">Aucune lecon dans ce module.</p>
               ) : (
                 <ul>
-                  {moduleLessons.map((lesson) => (
-                    <li
-                      key={lesson._id}
-                      className="flex items-center justify-between border-b border-slate-50 px-6 py-3 last:border-0 dark:border-slate-800/60"
-                    >
-                      <span className="text-sm text-slate-700 dark:text-slate-200">{lesson.title}</span>
-                      {lesson.pdfUrl && (
-                        <a
-                          href={`${fileBaseUrl}/uploads/${lesson.pdfUrl}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          download
-                          className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300"
+                    {moduleLessons.map((lesson) => (
+                      <li
+                        key={lesson._id}
+                        className="flex items-center justify-between border-b border-slate-50 px-6 py-3 last:border-0 dark:border-slate-800/60"
+                      >
+                        <button
+                          onClick={() => navigate(`/Student/My_Courses/${courseId}/lesson/${lesson._id}`)}
+                          className="text-left text-sm text-slate-700 hover:underline dark:text-slate-200"
                         >
-                          ⬇ PDF
-                        </a>
-                      )}
-                    </li>
-                  ))}
+                          {lesson.title}
+                        </button>
+                        <div className="flex items-center gap-2">
+                          {lesson.pdfUrl && (
+                            <a
+                              href={`${fileBaseUrl}/uploads/${lesson.pdfUrl}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              download
+                              className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300"
+                            >
+                              ⬇ PDF
+                            </a>
+                          )}
+                        </div>
+                      </li>
+                    ))}
                 </ul>
               )}
             </div>

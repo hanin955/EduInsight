@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/axios';
 import { getErrorMessage } from '../../api/axios';
 import AddUserModal from './AddUserModal';
-import UsersTable from './UsersTable';
+import UsersTable from './Userstable';
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);

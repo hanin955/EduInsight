@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/axios';
-import { getErrorMessage } from '../../api/axios';
+import { API_ORIGIN, getErrorMessage } from '../../api/axios';
 import StatCard, { Data} from '../../components/statcard';
-
-const BACKEND_URL = 'http://localhost:5000';
 
 function CourseThumbnail({ image, title }) {
   if (!image) {
@@ -16,7 +14,7 @@ function CourseThumbnail({ image, title }) {
   }
   return (
     <img
-      src={`${BACKEND_URL}/uploads/${image}`}
+      src={`${API_ORIGIN}/uploads/${image}`}
       alt={title}
       className="h-10 w-14 shrink-0 rounded-lg object-cover"
       onError={(e) => { e.target.style.display = 'none'; }}

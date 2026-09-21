@@ -21,11 +21,11 @@ export default function LessonsPage() {
       setLoading(true);
       const [lessonsRes, modulesRes] = await Promise.all([
         api.get('/lessons/lister', { params: { page, limit } }),
-        api.get('/modules/lister'),
+        api.get('/modules/lister', { params: { limit: 1000 } }),
       ]);
       setLessons(Array.isArray(lessonsRes.data.lessons) ? lessonsRes.data.lessons : []);
       setTotalPages(lessonsRes.data.totalPages || 1);
-      setModules(Array.isArray(modulesRes.data) ? modulesRes.data : []);
+      setModules(Array.isArray(modulesRes.data.modules) ? modulesRes.data.modules : []);
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {

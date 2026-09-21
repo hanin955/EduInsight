@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/axios';
 import { Data } from '../../components/statcard';
 import StatCard from '../../components/statcard';
-import StudentsByGradeChart from '../../components/dashboard/StudentsByGradeChart';
-import CourseCompletionChart from '../../components/dashboard/CourseCompletionChart';
+import StudentsByGradeChart from '../../components/Dashboard/StudentsByGradeChart';
+import CourseCompletionChart from '../../components/Dashboard/CourseCompletionChart';
 export default function AnalyticsPage() {
     const { courses, users, loading } = Data({ courses: true, users: true });
     const [gradeData, setGradeData] = useState([]);

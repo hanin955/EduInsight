@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const courseSchema = new mongoose.Schema({
     title : {type : String, required : true},
     description : String,
-    departement : {type :mongoose.Schema.Types.ObjectId, ref : "Departement", required: true},
+    departement : {type :mongoose.Schema.Types.ObjectId, ref : "Department", required: true},
     teacher :{type : mongoose.Schema.Types.ObjectId, ref: "User",required :true},
     duration : {type : Number},
     level : String,

@@ -1,4 +1,4 @@
-const BACKEND_URL = 'http://localhost:5000';
+import { API_ORIGIN } from '../../api/axios';
 const roleStyles = {
   admin: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
   teacher: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
@@ -28,7 +28,7 @@ function StatusBadge({ isActive }) {
 function Avatar({ user }) {
   return user.avatar ? (
     <img
-      src={`${BACKEND_URL}/uploads/${user.avatar}`}
+      src={`${API_ORIGIN}/uploads/${user.avatar}`}
       alt=""
       className="h-8 w-8 shrink-0 rounded-full object-cover"
       onError={(e) => { e.target.style.display = 'none'; }}

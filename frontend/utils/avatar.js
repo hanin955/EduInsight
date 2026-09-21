@@ -1,4 +1,4 @@
-const API_ORIGIN = "http://localhost:5000";
+import { API_ORIGIN } from '../src/api/axios';
 
 export function getAvatarUrl(user) {
     const fullName = `${user?.firstName || 'Utilisateur'} ${user?.lastName || ''}`.trim();
