@@ -82,21 +82,21 @@ export default function TeacherCoursesPage() {
 
   return (
     <div>
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">My Courses</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">My Courses</h2>
         </div>
-        <div className="flex flex-1 items-center justify-end gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:flex-1 lg:justify-end">
           <input
             type="text"
             placeholder="Rechercher un cours..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-xs rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white sm:max-w-xs"
           />
           <button
             onClick={() => setShowModal(true)}
-            className="whitespace-nowrap rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            className="w-full whitespace-nowrap rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:w-auto"
           >
             + New Course
           </button>

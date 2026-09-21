@@ -3,44 +3,45 @@ import DashboardLayout from '../../../layouts/DashboardLayout';
 import { BookOpen, Puzzle, GraduationCap, FileText, Settings, Layers, PlaySquare } from 'lucide-react';
 import TeacherCoursesPage from './TeacherCoursesPage';
 import TeacherQuizzesPage from './TeacherQuizzesPage';
-import TeacherStudentsPage from './TeacherStudentsPage'
+import TeacherStudentsPage from './TeacherStudentsPage';
 import SettingsPage from '../admin/SettingsPage';
 import TeacherModulesPage from './TeacherModulesPage';
 import TeacherLessonsPage from './TeacherLessonsPage';
 import DocsPage from '../admin/DocsPage';
 const teacherMenus = [
-  { label: 'Courses', link: '/Teacher/Courses', icon: BookOpen },
-  { label: 'Modules', link: '/Teacher/Modules', icon: Layers },
-  { label: 'Lessons', link: '/Teacher/Lessons', icon: PlaySquare },
-  { label: 'Quizzes', link: '/Teacher/Quizzes', icon: Puzzle },
-  { label: 'Students', link: '/Teacher/Students', icon: GraduationCap },
-  { label: 'Docs', link: '/Teacher/Docs', icon: FileText },
-  { label: 'Settings', link: '/Teacher/Settings', icon: Settings },
+  { label: 'Courses', link: '/teacher/courses', icon: BookOpen },
+  { label: 'Modules', link: '/teacher/modules', icon: Layers },
+  { label: 'Lessons', link: '/teacher/lessons', icon: PlaySquare },
+  { label: 'Quizzes', link: '/teacher/quizzes', icon: Puzzle },
+  { label: 'Students', link: '/teacher/students', icon: GraduationCap },
+  { label: 'Docs', link: '/teacher/docs', icon: FileText },
+  { label: 'Settings', link: '/teacher/settings', icon: Settings },
 ];
 const pageInfo = {
-  '/Teacher': { title: 'Teacher Dashboard', subtitle: 'Overview' },
-  '/Teacher/Courses': { title: 'Courses', subtitle: 'Manage courses' },
-  '/Teacher/Modules': { title: 'Modules', subtitle: 'Manage modules' },
-  '/Teacher/Lessons': { title: 'Lessons', subtitle: 'Manage lessons' },
-  '/Teacher/Quizzes': { title: 'Quizzes', subtitle: 'Assessments' },
-  '/Teacher/Students': { title: 'Students', subtitle: 'Learner management' },
-  '/Teacher/Docs': { title: 'Docs', subtitle: 'Documentation' },
-  '/Teacher/Settings': { title: 'Settings', subtitle: 'Account settings' },
+  '/teacher': { title: 'Teacher Dashboard', subtitle: 'Overview' },
+  '/teacher/courses': { title: 'Courses', subtitle: 'Manage courses' },
+  '/teacher/modules': { title: 'Modules', subtitle: 'Manage modules' },
+  '/teacher/lessons': { title: 'Lessons', subtitle: 'Manage lessons' },
+  '/teacher/quizzes': { title: 'Quizzes', subtitle: 'Assessments' },
+  '/teacher/students': { title: 'Students', subtitle: 'Learner management' },
+  '/teacher/docs': { title: 'Docs', subtitle: 'Documentation' },
+  '/teacher/settings': { title: 'Settings', subtitle: 'Account settings' },
 };
 export default function TeacherDashboard() {
   const location = useLocation();
-  const current = pageInfo[location.pathname] || pageInfo['/Teacher'];
+  const currentPath = location.pathname.toLowerCase();
+  const current = pageInfo[currentPath] || pageInfo['/teacher'];
   return (
     <DashboardLayout title={current.title} subtitle={current.subtitle} menus={teacherMenus}>
       <Routes>
-        <Route path="/" element={<TeacherCoursesPage />} />
-        <Route path="/Courses" element={<TeacherCoursesPage />} />
-        <Route path="/Modules" element={<TeacherModulesPage />} />
-        <Route path="/Lessons" element={<TeacherLessonsPage />} />
-        <Route path="/Quizzes" element={<TeacherQuizzesPage />} />
-        <Route path="/Students" element={<TeacherStudentsPage />} />
-        <Route path="/Docs" element={<DocsPage />} />
-        <Route path="/Settings" element={<SettingsPage />} />
+        <Route index element={<TeacherCoursesPage />} />
+        <Route path="courses" element={<TeacherCoursesPage />} />
+        <Route path="modules" element={<TeacherModulesPage />} />
+        <Route path="lessons" element={<TeacherLessonsPage />} />
+        <Route path="quizzes" element={<TeacherQuizzesPage />} />
+        <Route path="students" element={<TeacherStudentsPage />} />
+        <Route path="docs" element={<DocsPage />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Routes>
     </DashboardLayout>
   );

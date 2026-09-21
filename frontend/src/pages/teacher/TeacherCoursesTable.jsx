@@ -1,26 +1,36 @@
+import { useState } from 'react';
 import { API_ORIGIN } from '../../api/axios';
+
 function CourseThumbnail({ image, title }) {
-    if (!image) {
+    const [hasError, setHasError] = useState(false);
+
+    if (!image || hasError) {
         return (
-            <div className="flex h-10 w-14 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs text-slate-400 dark:bg-slate-800"> —</div>);}
+            <div className="flex h-10 w-14 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs text-slate-400 dark:bg-slate-800">
+                —
+            </div>
+        );
+    }
+
     return (
         <img
             src={`${API_ORIGIN}/uploads/${image}`}
             alt={title}
             className="h-10 w-14 shrink-0 rounded-lg object-cover"
-            onError={(e) => {
-            e.target.style.display = 'none';
-        }}/>
+            onError={() => setHasError(true)}
+        />
     );
 }
+
 function LevelBadge({ level }) {
     const label = level ? level.charAt(0).toUpperCase() + level.slice(1) : 'N/A';
     return (
         <span className="inline-block shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
-        {label}
+            {label}
         </span>
     );
 }
+
 function StateBox({ tone = 'default', children }) {
     const toneClass = tone === 'error' ? 'text-red-500' : 'text-slate-400';
     return (
@@ -29,6 +39,7 @@ function StateBox({ tone = 'default', children }) {
         </div>
     );
 }
+
 export default function TeacherCoursesTable({
     courses,
     loading,
@@ -46,50 +57,55 @@ export default function TeacherCoursesTable({
             {/* Table view - tablette & PC */}
             <div className="hidden overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:block">
                 <table className="w-full min-w-[760px] text-left">
-                <thead>
-                    <tr className="border-b border-slate-100 dark:border-slate-800">
-                        <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Course</th>
-                        <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Instructor</th>
-                        <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Students</th>
-                        <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Level</th>
-                        <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {courses.map((course) => (
-                        <tr
-                            key={course._id}
-                            className="border-b border-slate-50 last:border-0 dark:border-slate-800/60">
-                            <td className="flex items-center gap-3 px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
-                                <CourseThumbnail image={course.image} title={course.title} />
-                                {course.title}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                                {course.teacher? `${course.teacher.firstName ?? ''} ${course.teacher.lastName ?? ''}`.trim(): '—'}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                                {countStudents(course._id)}
-                            </td>
-                            <td className="px-6 py-4">
-                                <LevelBadge level={course.level} />
-                            </td>
-                            <td className="px-6 py-4">
-                                <div className="flex gap-2">
-                                <button
-                                    onClick={() => onEditClick(course)}
-                                    className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50">
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => onDeleteClick(course._id)}
-                                    className="rounded-full bg-red-50 px-4 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50">
-                                    Delete
-                                </button>
-                            </div>
-                        </td>
+                    <thead>
+                        <tr className="border-b border-slate-100 dark:border-slate-800">
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Course</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Instructor</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Students</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Level</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
+                    </thead>
+                    <tbody>
+                        {courses.map((course) => (
+                            <tr
+                                key={course._id}
+                                className="border-b border-slate-50 last:border-0 dark:border-slate-800/60"
+                            >
+                                <td className="flex items-center gap-3 px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
+                                    <CourseThumbnail image={course.image} title={course.title} />
+                                    {course.title}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                    {course.teacher ? `${course.teacher.firstName ?? ''} ${course.teacher.lastName ?? ''}`.trim() : '—'}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                    {countStudents(course._id)}
+                                </td>
+                                <td className="px-6 py-4">
+                                    <LevelBadge level={course.level} />
+                                </td>
+                                <td className="px-6 py-4">
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => onEditClick(course)}
+                                            className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => onDeleteClick(course._id)}
+                                            className="rounded-full bg-red-50 px-4 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
             </div>
 
@@ -116,14 +132,16 @@ export default function TeacherCoursesTable({
                             </span>
                             <div className="flex gap-2">
                                 <button
+                                    type="button"
                                     onClick={() => onEditClick(course)}
-                                    className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                                    className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600 active:scale-95 dark:bg-blue-900/30 dark:text-blue-300"
                                 >
                                     Edit
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => onDeleteClick(course._id)}
-                                    className="rounded-full bg-red-50 px-4 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                                    className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-600 active:scale-95 dark:bg-red-900/30 dark:text-red-300"
                                 >
                                     Delete
                                 </button>

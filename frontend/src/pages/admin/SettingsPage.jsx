@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/axios';
 import { getErrorMessage } from '../../api/axios';
+
 export default function SettingsPage() {
   const [form, setForm] = useState({ name: '', email: '' });
   const [userId, setUserId] = useState(null);
@@ -10,6 +11,7 @@ export default function SettingsPage() {
   const [darkMode, setDarkMode] = useState(
     () => document.documentElement.classList.contains('dark')
   );
+
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -25,9 +27,11 @@ export default function SettingsPage() {
       }
     }
   }, []);
+
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
   };
+
   const handleSave = async (e) => {
     e.preventDefault();
     if (!userId) {
@@ -60,16 +64,18 @@ export default function SettingsPage() {
       setSaving(false);
     }
   };
+
   const toggleDarkMode = () => {
     const next = !darkMode;
     setDarkMode(next);
     document.documentElement.classList.toggle('dark', next);
     localStorage.setItem('theme', next ? 'dark' : 'light');
   };
+
   return (
     <div className="max-w-2xl space-y-6">
-      <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h3 className="mb-4 text-lg font-bold text-slate-900 dark:text-white">Profile</h3>
+      <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+        <h3 className="mb-4 text-base font-bold text-slate-900 dark:text-white sm:text-lg">Profile</h3>
         <form onSubmit={handleSave} className="space-y-4">
           <div>
             <label className="mb-1 block text-sm text-slate-600 dark:text-slate-300">Name</label>
@@ -94,17 +100,17 @@ export default function SettingsPage() {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50 sm:w-auto"
           >
             {saving ? 'Saving...' : 'Save'}
           </button>
         </form>
       </div>
-      <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h3 className="mb-4 text-lg font-bold text-slate-900 dark:text-white">Theme</h3>
+      <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+        <h3 className="mb-4 text-base font-bold text-slate-900 dark:text-white sm:text-lg">Theme</h3>
         <button
           onClick={toggleDarkMode}
-          className="rounded-full bg-blue-50 px-5 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+          className="w-full rounded-full bg-blue-50 px-5 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 sm:w-auto"
         >
           Toggle Dark Mode
         </button>

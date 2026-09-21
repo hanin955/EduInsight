@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { GraduationCap, Moon, Sun, LogOut, Camera } from 'lucide-react';
+import { GraduationCap, Moon, Sun, LogOut, Camera, X } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { updateUserAvatar } from './hooks/userService';
 import { getAvatarUrl } from '../../utils/avatar';
@@ -10,7 +10,8 @@ const roleTabs = [
     { label: 'Teacher', path: '/Teacher' },
     { label: 'Student', path: '/Student' },
 ];
-export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
+
+export default function Sidebar({ menus, user, onLogout, onUserUpdate, onClose }) {
     const navigate = useNavigate();
     const location = useLocation();
     const { isDark, toggleTheme } = useTheme();
@@ -18,6 +19,7 @@ export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
     const [uploading, setUploading] = useState(false);
     const userId = user?._id || user?.id;
     const avatarUrl = getAvatarUrl(user);
+
     const handleAvatarClick = () => {
         if (!userId) {
             console.error("Impossible de changer l'avatar : identifiant utilisateur introuvable", user);
@@ -25,6 +27,7 @@ export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
         }
         fileInputRef.current?.click();
     };
+
     const handleFileChange = async (e) => {
         const file = e.target.files?.[0];
         if (!file || !userId) return;
@@ -40,12 +43,28 @@ export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
             e.target.value = '';
         }
     };
+    const handleRoleTabClick = (path) => {
+        navigate(path);
+        onClose?.();
+    };
+
     return (
         <aside className="flex h-full w-full flex-col overflow-y-auto border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:w-72">
             <div className="flex-shrink-0 p-5 pb-0">
-                <div className="mb-1 flex items-center gap-2">
-                    <GraduationCap className="h-7 w-7 text-indigo-500" strokeWidth={2.2} />
-                    <span className="text-xl font-bold text-slate-900 dark:text-white">EduInsight</span>
+                <div className="mb-1 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <GraduationCap className="h-7 w-7 text-indigo-500" strokeWidth={2.2} />
+                        <span className="text-xl font-bold text-slate-900 dark:text-white">EduInsight</span>
+                    </div>
+                    {/* Bouton fermer : visible seulement sur mobile/tablette */}
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        aria-label="Fermer le menu"
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 lg:hidden"
+                    >
+                        <X size={18} />
+                    </button>
                 </div>
                 <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">Complete Learning Platform</p>
                 <div className="mb-4 border-b border-slate-200 dark:border-slate-800" />
@@ -55,7 +74,7 @@ export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
                         return (
                             <button
                                 key={tab.path}
-                                onClick={() => navigate(tab.path)}
+                                onClick={() => handleRoleTabClick(tab.path)}
                                 className={`flex-1 rounded-full px-3 py-1.5 transition ${
                                     isActive
                                         ? 'bg-white text-indigo-600 shadow-sm dark:bg-slate-700 dark:text-indigo-400'
@@ -75,6 +94,7 @@ export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
                         <NavLink
                             key={item.link}
                             to={item.link}
+                            onClick={() => onClose?.()}
                             className={({ isActive }) =>
                                 `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
                                     isActive

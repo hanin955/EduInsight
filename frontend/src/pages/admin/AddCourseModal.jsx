@@ -242,8 +242,7 @@ export default function AddCourseModal({ onClose, onCreated, onUpdated, course }
             Cancel
           </button>
           <button
-            type="submit"
-            form="__noop"
+            type="button"
             onClick={handleSubmit}
             disabled={saving}
             className="w-full rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 sm:w-auto sm:py-2"

@@ -71,7 +71,8 @@ export default function UsersPage() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white sm:w-auto"
+          >
             <option value="all">Tous les rôles</option>
             <option value="admin">Admin</option>
             <option value="teacher">Teacher</option>
@@ -80,7 +81,7 @@ export default function UsersPage() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+          className="w-full rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:w-auto"
         >
           + Add User
         </button>

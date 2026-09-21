@@ -15,6 +15,7 @@ function CertificateCard({ studentName, courseTitle, grade, date }) {
         scale: 2,
         backgroundColor: '#ffffff',
         useCORS: true,
+        windowWidth: 900, // force une largeur de référence desktop, même si affiché en mobile
       });
       const imgData = canvas.toDataURL('image/png');
 
@@ -37,26 +38,30 @@ function CertificateCard({ studentName, courseTitle, grade, date }) {
   return (
     <div
       ref={cardRef}
-      className="mb-6 rounded-2xl border-2 border-amber-300 bg-gradient-to-b from-amber-50 to-white p-10 text-center shadow-sm dark:border-amber-700 dark:from-amber-950/30 dark:to-slate-900"
+      className="mb-6 rounded-2xl border-2 border-amber-300 bg-gradient-to-b from-amber-50 to-white p-6 text-center shadow-sm dark:border-amber-700 dark:from-amber-950/30 dark:to-slate-900 sm:p-10"
     >
       <div className="mb-4 flex justify-center">
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-3xl dark:bg-amber-900/40">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-2xl dark:bg-amber-900/40 sm:h-16 sm:w-16 sm:text-3xl">
           🏅
         </span>
       </div>
-      <h2 className="mb-2 text-2xl font-bold text-amber-700 dark:text-amber-400">
+      <h2 className="mb-2 text-xl font-bold text-amber-700 dark:text-amber-400 sm:text-2xl">
         Certificate of Completion
       </h2>
       <p className="text-sm text-slate-600 dark:text-slate-300">This certifies that</p>
-      <p className="mt-1 text-xl font-bold text-slate-900 dark:text-white">{studentName}</p>
+      <p className="mt-1 break-words text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
+        {studentName}
+      </p>
       <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">has successfully completed</p>
-      <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">{courseTitle}</p>
+      <p className="mt-1 break-words text-base font-bold text-slate-900 dark:text-white sm:text-lg">
+        {courseTitle}
+      </p>
       <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Grade: {grade}%</p>
       <p className="text-sm text-slate-600 dark:text-slate-300">Date: {date}</p>
       <button
         onClick={handleDownload}
         disabled={downloading}
-        className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+        className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60 sm:w-auto"
       >
         {downloading ? 'Génération...' : '⬇ Download'}
       </button>
@@ -103,13 +108,16 @@ export default function CertificatesPage() {
     const d = new Date(dateStr);
     return d.toLocaleDateString('fr-FR');
   };
+
   return (
     <div>
-      <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">Your Certificates</h2>
+      <h2 className="mb-6 text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
+        Your Certificates
+      </h2>
       {loading && <p className="text-sm text-slate-400">Chargement...</p>}
       {!loading && error && <p className="text-sm text-red-500">{error}</p>}
       {!loading && !error && myCompletedInscriptions.length === 0 && (
-        <div className="rounded-2xl border border-slate-100 bg-white p-10 text-center text-sm text-slate-400 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="rounded-2xl border border-slate-100 bg-white p-6 text-center text-sm text-slate-400 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-10">
           Vous n'avez pas encore de certificat. Terminez un cours pour en obtenir un !
         </div>
       )}
