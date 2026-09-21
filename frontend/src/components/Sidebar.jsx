@@ -10,17 +10,14 @@ const roleTabs = [
     { label: 'Teacher', path: '/Teacher' },
     { label: 'Student', path: '/Student' },
 ];
-
 export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
     const navigate = useNavigate();
     const location = useLocation();
     const { isDark, toggleTheme } = useTheme();
     const fileInputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
-
     const userId = user?._id || user?.id;
     const avatarUrl = getAvatarUrl(user);
-
     const handleAvatarClick = () => {
         if (!userId) {
             console.error("Impossible de changer l'avatar : identifiant utilisateur introuvable", user);
@@ -28,11 +25,9 @@ export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
         }
         fileInputRef.current?.click();
     };
-
     const handleFileChange = async (e) => {
         const file = e.target.files?.[0];
         if (!file || !userId) return;
-
         try {
             setUploading(true);
             const updatedUser = await updateUserAvatar(userId, file);
@@ -45,7 +40,6 @@ export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
             e.target.value = '';
         }
     };
-
     return (
         <aside className="flex h-full w-full flex-col overflow-y-auto border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:w-72">
             <div className="flex-shrink-0 p-5 pb-0">
@@ -74,7 +68,6 @@ export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
                     })}
                 </div>
             </div>
-
             <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto px-4">
                 {menus.map((item) => {
                     const Icon = item.icon;
@@ -96,7 +89,6 @@ export default function Sidebar({ menus, user, onLogout, onUserUpdate }) {
                     );
                 })}
             </nav>
-
             <div className="flex-shrink-0 border-t border-slate-200 p-5 pt-4 dark:border-slate-800">
                 <div className="mb-3 flex items-center gap-3">
                     <button
