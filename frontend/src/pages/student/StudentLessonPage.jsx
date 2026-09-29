@@ -35,27 +35,32 @@ export default function StudentLessonPage() {
     <div>
       <button
         onClick={() => navigate(`/Student/My_Courses/${courseId}`)}
-        className="mb-4 text-sm font-medium text-blue-600 hover:underline"
+        className="mb-4 text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
       >
         ← Retour au cours
       </button>
-      <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{lesson.title}</h2>
+      <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+        <h2 className="break-words text-lg font-bold text-slate-900 dark:text-white sm:text-2xl">
+          {lesson.title}
+        </h2>
         {lesson.videoUrl && (
           <div className="mt-4">
-            <video controls className="w-full max-h-80">
+            <video controls className="max-h-80 w-full rounded-lg">
               <source src={lesson.videoUrl} />
             </video>
           </div>
         )}
-        <div className="mt-4 text-sm text-slate-700 dark:text-slate-300" dangerouslySetInnerHTML={{ __html: lesson.content || '' }} />
+        <div
+          className="prose prose-sm mt-4 max-w-none break-words text-slate-700 dark:prose-invert dark:text-slate-300"
+          dangerouslySetInnerHTML={{ __html: lesson.content || '' }}
+        />
         {lesson.pdfUrl && (
-          <a
+          
             href={`${fileBaseUrl}/uploads/${lesson.pdfUrl}`}
             target="_blank"
             rel="noopener noreferrer"
             download
-            className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 sm:w-auto"
           >
             ⬇ Télécharger le PDF
           </a>

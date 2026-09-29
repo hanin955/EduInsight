@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
-import { api } from '../../api/axios';
-import { getErrorMessage } from '../../api/axios';
+import { useEffect, useState, useCallback } from 'react';
+import { api, getErrorMessage } from '../../api/axios';
 import { getAvatarUrl } from '../../../utils/avatar';
+<<<<<<< HEAD
+=======
 
+>>>>>>> e6fd4e4 (les fichiers modifies)
 function StateBox({ tone = 'default', children }) {
   const toneClass = tone === 'error' ? 'text-red-500' : 'text-slate-400';
   return (
@@ -11,7 +13,10 @@ function StateBox({ tone = 'default', children }) {
     </div>
   );
 }
+<<<<<<< HEAD
+=======
 
+>>>>>>> e6fd4e4 (les fichiers modifies)
 function Avatar({ row }) {
   return (
     <img
@@ -21,13 +26,20 @@ function Avatar({ row }) {
       onError={(e) => {
         e.currentTarget.onerror = null;
         e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+<<<<<<< HEAD
+          `${row.firstName}${row.lastName}`.trim()
+=======
           `${row.firstName} ${row.lastName}`.trim()
+>>>>>>> e6fd4e4 (les fichiers modifies)
         )}&background=e0e7ff&color=4338ca&bold=true`;
       }}
     />
   );
 }
+<<<<<<< HEAD
+=======
 
+>>>>>>> e6fd4e4 (les fichiers modifies)
 export default function TeacherStudentsPage() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,25 +47,30 @@ export default function TeacherStudentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const limit = 5;
-
-  const currentUser = (() => {
+  const getTeacherId = () => {
     try {
-      return JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(localStorage.getItem('user'));
+      return user?.id || user?._id || null;
     } catch {
       return null;
     }
-  })();
-  const teacherId = currentUser?.id;
-
-  const loadData = async () => {
+  };
+  const loadData = useCallback(async () => {
+    const teacherId = getTeacherId();
+    if (!teacherId) {
+      setError('Session expirée ou utilisateur non identifié.');
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
+      setError(null);
       const [coursesRes, inscriptionsRes, metricsRes] = await Promise.all([
         api.get('/courses/list', { params: { teacher: teacherId, limit: 1000 } }),
         api.get('/inscriptions/lister'),
         api.get('/performancemetrics/lister'),
       ]);
-      const myCourses = Array.isArray(coursesRes.data.courses) ? coursesRes.data.courses : [];
+      const myCourses = Array.isArray(coursesRes.data?.courses) ? coursesRes.data.courses : [];
       const myCourseIds = myCourses.map((c) => c._id);
       const allInscriptions = Array.isArray(inscriptionsRes.data) ? inscriptionsRes.data : [];
       const myInscriptions = allInscriptions.filter((ins) => {
@@ -63,15 +80,22 @@ export default function TeacherStudentsPage() {
       const allMetrics = Array.isArray(metricsRes.data) ? metricsRes.data : [];
       const byStudent = {};
       myInscriptions.forEach((ins) => {
-        const studentId = ins.student?._id || ins.student;
+        const studentObj = ins.student;
+        const studentId = studentObj?._id || studentObj;
+        const courseId = ins.course?._id || ins.course;
+        if (!studentId) return;
         if (!byStudent[studentId]) {
-          byStudent[studentId] = { courseIds: [] };
+          byStudent[studentId] = {
+            details: typeof studentObj === 'object' ? studentObj : null,
+            courseIds: [],
+          };
         }
-        byStudent[studentId].courseIds.push(ins.course?._id || ins.course);
+        byStudent[studentId].courseIds.push(courseId);
       });
       const studentIds = Object.keys(byStudent);
       const studentDetails = await Promise.all(
         studentIds.map(async (id) => {
+          if (byStudent[id].details) return byStudent[id].details;
           try {
             const res = await api.get(`/users/${id}`);
             return res.data;
@@ -111,53 +135,50 @@ export default function TeacherStudentsPage() {
     } finally {
       setLoading(false);
     }
-  };
-
+  }, []);
   useEffect(() => {
     loadData();
-  }, []);
-
+  }, [loadData]);
   const filteredRows = rows.filter((r) => {
     const fullName = `${r.firstName} ${r.lastName}`.toLowerCase();
-    return fullName.includes(searchTerm.toLowerCase());
+    return fullName.includes(searchTerm.toLowerCase()) || r.email.toLowerCase().includes(searchTerm.toLowerCase());
   });
-
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / limit));
   const paginatedRows = filteredRows.slice((page - 1) * limit, page * limit);
-
   useEffect(() => {
     setPage(1);
   }, [searchTerm]);
-
-  const handlePrevious = () => {
-    if (page > 1) setPage((p) => p - 1);
-  };
-
-  const handleNext = () => {
-    if (page < totalPages) setPage((p) => p + 1);
-  };
-
   return (
     <div>
       <div className="mb-6">
         <input
           type="text"
-          placeholder="Rechercher un étudiant..."
+          placeholder="Rechercher par nom ou email..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full max-w-xs rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         />
       </div>
+<<<<<<< HEAD
+=======
 
+>>>>>>> e6fd4e4 (les fichiers modifies)
       {loading ? (
         <StateBox>Chargement...</StateBox>
       ) : error ? (
         <StateBox tone="error">{error}</StateBox>
+<<<<<<< HEAD
+      ) : filteredRows.length === 0 ? (
+        <StateBox>Aucun étudiant trouvé.</StateBox>
+      ) : (
+        <>
+=======
       ) : paginatedRows.length === 0 ? (
         <StateBox>Aucun étudiant inscrit à vos cours pour le moment.</StateBox>
       ) : (
         <>
           {/* Table view - tablette & PC */}
+>>>>>>> e6fd4e4 (les fichiers modifies)
           <div className="hidden overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:block">
             <table className="w-full min-w-[600px] text-left">
               <thead>
@@ -196,8 +217,11 @@ export default function TeacherStudentsPage() {
               </tbody>
             </table>
           </div>
+<<<<<<< HEAD
+=======
 
           {/* Card view - mobile */}
+>>>>>>> e6fd4e4 (les fichiers modifies)
           <div className="space-y-3 md:hidden">
             {paginatedRows.map((row) => (
               <div
@@ -224,11 +248,16 @@ export default function TeacherStudentsPage() {
           </div>
         </>
       )}
+<<<<<<< HEAD
+      {!loading && !error && filteredRows.length > 0 && (
+=======
 
       {!loading && !error && (
+>>>>>>> e6fd4e4 (les fichiers modifies)
         <div className="mt-4 flex items-center justify-between px-2">
           <button
-            onClick={handlePrevious}
+            type="button"
+            onClick={() => setPage((p) => Math.max(p - 1, 1))}
             disabled={page <= 1}
             className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-800 dark:text-slate-300"
           >
@@ -238,7 +267,8 @@ export default function TeacherStudentsPage() {
             Page {page} / {totalPages}
           </span>
           <button
-            onClick={handleNext}
+            type="button"
+            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
             disabled={page >= totalPages}
             className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-800 dark:text-slate-300"
           >
