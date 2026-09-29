@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
-import { api } from '../../api/axios';
-import { getErrorMessage } from '../../api/axios';
+import { useEffect, useState, useCallback } from 'react';
+import { api, getErrorMessage } from '../../api/axios';
 import AddQuizModal from '../admin/AddQuizModal';
+<<<<<<< HEAD
+=======
 
+>>>>>>> e6fd4e4 (les fichiers modifies)
 function StatusBadge({ isPublished }) {
   return isPublished ? (
     <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
@@ -14,7 +16,10 @@ function StatusBadge({ isPublished }) {
     </span>
   );
 }
+<<<<<<< HEAD
+=======
 
+>>>>>>> e6fd4e4 (les fichiers modifies)
 function StateBox({ tone = 'default', children }) {
   const toneClass = tone === 'error' ? 'text-red-500' : 'text-slate-400';
   return (
@@ -23,7 +28,10 @@ function StateBox({ tone = 'default', children }) {
     </div>
   );
 }
+<<<<<<< HEAD
+=======
 
+>>>>>>> e6fd4e4 (les fichiers modifies)
 export default function TeacherQuizzesPage() {
   const [quizzes, setQuizzes] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -36,48 +44,60 @@ export default function TeacherQuizzesPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 5;
-
-  const currentUser = (() => {
+  const getTeacherId = () => {
     try {
-      return JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(localStorage.getItem('user'));
+      return user?.id || user?._id || null;
     } catch {
       return null;
     }
-  })();
-  const teacherId = currentUser?.id;
-
-  const loadData = async (targetPage = page) => {
+  };
+  const loadData = useCallback(async (targetPage = 1) => {
+    const teacherId = getTeacherId();
+    if (!teacherId) {
+      setError('Session expirée ou utilisateur non identifié.');
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
+      setError(null);
       const [quizzesRes, coursesRes, questionsRes] = await Promise.all([
-        api.get('/quizzes/list', { params: { page: targetPage, limit, createdBy: teacherId } }),
+        api.get('/quizzes/list', { 
+          params: { 
+            page: targetPage, 
+            limit, 
+            createdBy: teacherId,
+            search: searchTerm || undefined
+          } 
+        }),
         api.get('/courses/list', { params: { limit: 1000 } }),
         api.get('/questions/lister'),
       ]);
-      setQuizzes(Array.isArray(quizzesRes.data.quizzes) ? quizzesRes.data.quizzes : []);
-      setTotalPages(quizzesRes.data.totalPages || 1);
-      setPage(quizzesRes.data.page || 1);
-      setCourses(Array.isArray(coursesRes.data.courses) ? coursesRes.data.courses : []);
+      const fetchedQuizzes = Array.isArray(quizzesRes.data?.quizzes) ? quizzesRes.data.quizzes : [];
+      setQuizzes(fetchedQuizzes);
+      setTotalPages(quizzesRes.data?.totalPages || 1);
+      setCourses(Array.isArray(coursesRes.data?.courses) ? coursesRes.data.courses : []);
       setQuestions(Array.isArray(questionsRes.data) ? questionsRes.data : []);
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
-  };
-
+  }, [searchTerm]);
   useEffect(() => {
     loadData(page);
-  }, [page]);
-
+  }, [page, loadData]);
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setPage(1);
+  };
   const handleQuizCreated = () => {
     loadData(page);
   };
-
   const handleQuizUpdated = (updatedQuiz) => {
-    setQuizzes((prev) => prev.map((q) => (q._id === updatedQuiz._id ? updatedQuiz : q)));
+    setQuizzes((prev) => prev.map((q) => (q._id === updatedQuiz._id ? { ...q, ...updatedQuiz } : q)));
   };
-
   const handlePublish = async (quizId) => {
     try {
       await api.patch(`/quizzes/${quizId}/publish`);
@@ -85,30 +105,16 @@ export default function TeacherQuizzesPage() {
         prev.map((q) => (q._id === quizId ? { ...q, isPublished: true } : q))
       );
     } catch (err) {
-      setError(getErrorMessage(err));
+      alert(getErrorMessage(err));
     }
   };
-
   const getCourseTitle = (courseId) => {
-    const course = courses.find((c) => c._id === courseId || c._id === courseId?._id);
+    const id = courseId?._id || courseId;
+    const course = courses.find((c) => c._id === id);
     return course?.title || '—';
   };
-
   const countQuestions = (quizId) =>
     questions.filter((q) => q.quiz === quizId || q.quiz?._id === quizId).length;
-
-  const filteredQuizzes = quizzes.filter((q) =>
-    q.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handlePrevious = () => {
-    if (page > 1) setPage((p) => p - 1);
-  };
-
-  const handleNext = () => {
-    if (page < totalPages) setPage((p) => p + 1);
-  };
-
   return (
     <div>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -116,24 +122,37 @@ export default function TeacherQuizzesPage() {
           type="text"
           placeholder="Rechercher un quiz..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full max-w-xs rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"/>
+          onChange={handleSearchChange}
+          className="w-full max-w-xs rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+        />
         <button
+          type="button"
           onClick={() => setShowModal(true)}
-          className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
+          className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+        >
           + Create Quiz
         </button>
       </div>
+<<<<<<< HEAD
+=======
 
+>>>>>>> e6fd4e4 (les fichiers modifies)
       {loading ? (
         <StateBox>Chargement...</StateBox>
       ) : error ? (
         <StateBox tone="error">{error}</StateBox>
+<<<<<<< HEAD
+      ) : quizzes.length === 0 ? (
+        <StateBox>Aucun quiz trouvé.</StateBox>
+      ) : (
+        <>
+=======
       ) : filteredQuizzes.length === 0 ? (
         <StateBox>Vous n'avez créé aucun quiz pour le moment.</StateBox>
       ) : (
         <>
           {/* Table view - tablette & PC */}
+>>>>>>> e6fd4e4 (les fichiers modifies)
           <div className="hidden overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:block">
             <table className="w-full min-w-[720px] text-left">
               <thead>
@@ -146,7 +165,11 @@ export default function TeacherQuizzesPage() {
                 </tr>
               </thead>
               <tbody>
+<<<<<<< HEAD
+                {quizzes.map((quiz) => (
+=======
                 {filteredQuizzes.map((quiz) => (
+>>>>>>> e6fd4e4 (les fichiers modifies)
                   <tr
                     key={quiz._id}
                     className="border-b border-slate-50 last:border-0 dark:border-slate-800/60"
@@ -158,7 +181,11 @@ export default function TeacherQuizzesPage() {
                       {getCourseTitle(quiz.course)}
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+<<<<<<< HEAD
+                      {quiz.questionsCount ?? countQuestions(quiz._id)}
+=======
                       {countQuestions(quiz._id)}
+>>>>>>> e6fd4e4 (les fichiers modifies)
                     </td>
                     <td className="px-6 py-4">
                       <StatusBadge isPublished={quiz.isPublished} />
@@ -167,6 +194,10 @@ export default function TeacherQuizzesPage() {
                       <div className="flex gap-2">
                         {!quiz.isPublished && (
                           <button
+<<<<<<< HEAD
+                            type="button"
+=======
+>>>>>>> e6fd4e4 (les fichiers modifies)
                             onClick={() => handlePublish(quiz._id)}
                             className="rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-600 transition hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50"
                           >
@@ -174,6 +205,10 @@ export default function TeacherQuizzesPage() {
                           </button>
                         )}
                         <button
+<<<<<<< HEAD
+                          type="button"
+=======
+>>>>>>> e6fd4e4 (les fichiers modifies)
                           onClick={() => setEditingQuiz(quiz)}
                           className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
                         >
@@ -187,9 +222,15 @@ export default function TeacherQuizzesPage() {
             </table>
           </div>
 
+<<<<<<< HEAD
+          {/* Card view - Mobile */}
+          <div className="space-y-3 md:hidden">
+            {quizzes.map((quiz) => (
+=======
           {/* Card view - mobile */}
           <div className="space-y-3 md:hidden">
             {filteredQuizzes.map((quiz) => (
+>>>>>>> e6fd4e4 (les fichiers modifies)
               <div
                 key={quiz._id}
                 className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
@@ -199,11 +240,19 @@ export default function TeacherQuizzesPage() {
                   <StatusBadge isPublished={quiz.isPublished} />
                 </div>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+<<<<<<< HEAD
+                  {getCourseTitle(quiz.course)} · {quiz.questionsCount ?? countQuestions(quiz._id)} questions
+=======
                   {getCourseTitle(quiz.course)} · {countQuestions(quiz._id)} questions
+>>>>>>> e6fd4e4 (les fichiers modifies)
                 </p>
                 <div className="mt-3 flex justify-end gap-2 border-t border-slate-50 pt-3 dark:border-slate-800/60">
                   {!quiz.isPublished && (
                     <button
+<<<<<<< HEAD
+                      type="button"
+=======
+>>>>>>> e6fd4e4 (les fichiers modifies)
                       onClick={() => handlePublish(quiz._id)}
                       className="rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-600 transition hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50"
                     >
@@ -211,6 +260,10 @@ export default function TeacherQuizzesPage() {
                     </button>
                   )}
                   <button
+<<<<<<< HEAD
+                    type="button"
+=======
+>>>>>>> e6fd4e4 (les fichiers modifies)
                     onClick={() => setEditingQuiz(quiz)}
                     className="rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
                   >
@@ -222,11 +275,16 @@ export default function TeacherQuizzesPage() {
           </div>
         </>
       )}
+<<<<<<< HEAD
+      {!loading && !error && quizzes.length > 0 && (
+=======
 
       {!loading && !error && (
+>>>>>>> e6fd4e4 (les fichiers modifies)
         <div className="mt-4 flex items-center justify-between px-2">
           <button
-            onClick={handlePrevious}
+            type="button"
+            onClick={() => setPage((p) => Math.max(p - 1, 1))}
             disabled={page <= 1}
             className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-800 dark:text-slate-300"
           >
@@ -236,7 +294,8 @@ export default function TeacherQuizzesPage() {
             Page {page} / {totalPages}
           </span>
           <button
-            onClick={handleNext}
+            type="button"
+            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
             disabled={page >= totalPages}
             className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-800 dark:text-slate-300"
           >

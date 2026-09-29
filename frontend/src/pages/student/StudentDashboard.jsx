@@ -9,21 +9,24 @@ import CertificatesPage from './CertificatesPage';
 import QuizAttemptPage from './QuizAttemptPage';
 import DocsPage from '../admin/DocsPage';
 import { BookOpen, Puzzle, BarChart2, Award, FileText } from 'lucide-react';
+
 const studentMenus = [
   { label: 'My Courses', link: '/Student/My_Courses', icon: BookOpen },
   { label: ' My Quizzes', link: '/Student/My_Quizzes', icon: Puzzle },
   { label: 'My Progress', link: '/Student/My_Progress', icon: BarChart2 },
   { label: 'Certificates', link: '/Student/Certificates', icon: Award },
-  { label: 'Docs', link: '/student/Docs', icon: FileText },
+  { label: 'Docs', link: '/Student/Docs', icon: FileText },
 ];
+
 const pageInfo = {
   '/Student': { title: 'My Courses', subtitle: 'Enroll & learn' },
   '/Student/My_Courses': { title: 'My Courses', subtitle: 'Enroll & learn' },
   '/Student/My_Quizzes': { title: 'My Quizzes', subtitle: 'Assessments' },
   '/Student/My_Progress': { title: 'My Progress', subtitle: 'Track your growth' },
   '/Student/Certificates': { title: 'Certificates', subtitle: 'Your achievements' },
-  '/student/Docs': { title: 'Docs', subtitle: 'Documentation' },
+  '/Student/Docs': { title: 'Docs', subtitle: 'Documentation' },
 };
+
 export default function StudentDashboard() {
   const location = useLocation();
   const current = pageInfo[location.pathname] || pageInfo['/Student'];

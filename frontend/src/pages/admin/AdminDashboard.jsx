@@ -16,6 +16,7 @@ import StatCard, { Data } from '../../components/statcard';
 import PlatformGrowthChart from '../../components/Dashboard/PlatformGrowthChart';
 import UserByRoleChart from '../../components/Dashboard/UserByRoleChart';
 import { PieChart, Users, BookOpen, Puzzle, GraduationCap, BarChart2, FileText, Settings, Building2, Layers, PlaySquare } from 'lucide-react';
+
 const adminMenus = [
   { label: 'Dashboard', link: '/Admin', icon: PieChart },
   { label: 'Users', link: '/Admin/Users', icon: Users },
@@ -29,6 +30,7 @@ const adminMenus = [
   { label: 'Docs', link: '/Admin/Docs', icon: FileText },
   { label: 'Settings', link: '/Admin/Settings', icon: Settings },
 ];
+
 const pageInfo = {
   '/Admin': { title: 'Admin Dashboard', subtitle: 'Overview' },
   '/Admin/Users': { title: 'User Management', subtitle: 'Manage users' },
@@ -42,6 +44,7 @@ const pageInfo = {
   '/Admin/Docs': { title: 'Docs', subtitle: 'Documentation' },
   '/Admin/Settings': { title: 'Settings', subtitle: 'Platform settings' },
 };
+
 function DashboardOverview() {
   const { courses, users, metrics, attempts, loading } = Data({
     courses: true,
@@ -52,6 +55,7 @@ function DashboardOverview() {
   const [growthData, setGrowthData] = useState([]);
   const [roleData, setRoleData] = useState([]);
   const [chartsLoading, setChartsLoading] = useState(true);
+
   useEffect(() => {
     Promise.all([
       api.get('/statistics/platform-growth'),
@@ -64,12 +68,14 @@ function DashboardOverview() {
       .catch((err) => console.error("Erreur chargement dashboard:", err))
       .finally(() => setChartsLoading(false));
   }, []);
+
   const avgGrade =
     metrics.length > 0
       ? metrics.reduce((acc, m) => acc + (m.quizScoreAverage || 0), 0) / metrics.length
       : 0;
   const completedAttempts = attempts.filter((a) => a.submittedAt).length;
   const quizCompletion = attempts.length > 0 ? (completedAttempts / attempts.length) * 100 : 0;
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -91,26 +97,43 @@ function DashboardOverview() {
           value={loading ? '...' : `${avgGrade.toFixed(1)}%`}
         />
       </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 mt-4">
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h3 className="font-semibold text-lg mb-4">Platform Growth</h3>
-          {chartsLoading ? <p>Chargement...</p> : <PlatformGrowthChart data={growthData} />}
+
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+          <h3 className="mb-4 text-base font-semibold text-slate-900 dark:text-white sm:text-lg">
+            Platform Growth
+          </h3>
+          {chartsLoading ? (
+            <p className="text-sm text-slate-500 dark:text-slate-400">Chargement...</p>
+          ) : (
+            <PlatformGrowthChart data={growthData} />
+          )}
         </div>
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h3 className="font-semibold text-lg mb-4">User Distribution</h3>
-          {chartsLoading ? <p>Chargement...</p> : <UserByRoleChart data={roleData} />}
+        <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+          <h3 className="mb-4 text-base font-semibold text-slate-900 dark:text-white sm:text-lg">
+            User Distribution
+          </h3>
+          {chartsLoading ? (
+            <p className="text-sm text-slate-500 dark:text-slate-400">Chargement...</p>
+          ) : (
+            <UserByRoleChart data={roleData} />
+          )}
         </div>
       </div>
-      <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm mt-4">
-        <h3 className="font-semibold text-lg mb-3">Recent Alerts</h3>
-        <ul className="space-y-2 text-sm">
-          <li> 2 courses have low completion rates</li>
-          <li> Server health: Optimal</li>
+
+      <div className="mt-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+        <h3 className="mb-3 text-base font-semibold text-slate-900 dark:text-white sm:text-lg">
+          Recent Alerts
+        </h3>
+        <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+          <li>2 courses have low completion rates</li>
+          <li>Server health: Optimal</li>
         </ul>
       </div>
     </>
   );
 }
+
 export default function AdminDashboard() {
   const location = useLocation();
   const current = pageInfo[location.pathname] || pageInfo['/Admin'];

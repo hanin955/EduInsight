@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '../api/axios';
 import { getErrorMessage } from '../api/axios';
-
 export function Data({
     courses = false,
     inscriptions = false,
@@ -56,15 +55,14 @@ export function Data({
     }, [reload]);
     return { ...data, loading, error, reload };
 }
-
 export default function StatCard({ label, value, subtext, subtextColor = "text-emerald-500" }) {
     return (
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
-            <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{value}</p>
-        {subtext && (
-            <p className={`mt-1 text-xs font-medium ${subtextColor}`}>{subtext}</p>
-        )}
-    </div>
+        <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+            <p className="text-xs text-slate-500 dark:text-slate-400 sm:text-sm">{label}</p>
+            <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">{value}</p>
+            {subtext && (
+                <p className={`mt-1 text-xs font-medium ${subtextColor}`}>{subtext}</p>
+            )}
+        </div>
     );
 }

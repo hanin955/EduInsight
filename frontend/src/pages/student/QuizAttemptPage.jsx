@@ -159,9 +159,9 @@ export default function QuizAttemptPage() {
   if (expired) {
     return (
       <div className="mx-auto max-w-xl">
-        <div className="rounded-2xl border border-red-100 bg-white p-8 text-center shadow-sm dark:border-red-900 dark:bg-slate-900">
-          <div className="mb-4 text-6xl">⏱️</div>
-          <h2 className="text-2xl font-bold text-red-600 dark:text-red-400">
+        <div className="rounded-2xl border border-red-100 bg-white p-6 text-center shadow-sm dark:border-red-900 dark:bg-slate-900 sm:p-8">
+          <div className="mb-4 text-5xl sm:text-6xl">⏱️</div>
+          <h2 className="text-xl font-bold text-red-600 dark:text-red-400 sm:text-2xl">
             Temps écoulé
           </h2>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
@@ -170,7 +170,7 @@ export default function QuizAttemptPage() {
           </p>
           <button
             onClick={() => navigate('/Student/My_Quizzes')}
-            className="mt-6 rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            className="mt-6 w-full rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:w-auto"
           >
             Retour à Mes Quiz
           </button>
@@ -202,17 +202,19 @@ export default function QuizAttemptPage() {
       >
         Back to My Quizzes
       </button>
-      <div className="mb-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{quiz.title}</h2>
+      <div className="mb-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="break-words text-lg font-bold text-slate-900 dark:text-white sm:text-2xl">
+              {quiz.title}
+            </h2>
             {quiz.description && (
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{quiz.description}</p>
             )}
           </div>
           {timeLeft !== null && (
             <div
-              className={`rounded-full px-4 py-2 text-sm font-semibold ${
+              className={`inline-flex shrink-0 self-start rounded-full px-4 py-2 text-sm font-semibold ${
                 isTimeLow
                   ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
                   : 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300'
@@ -239,9 +241,9 @@ export default function QuizAttemptPage() {
       </div>
       <div
         key={currentQuestion._id}
-        className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+        className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
       >
-        <p className="mb-4 font-semibold text-slate-900 dark:text-white">
+        <p className="mb-4 break-words font-semibold text-slate-900 dark:text-white">
           {currentIndex + 1}. {currentQuestion.statement}
         </p>
         <div className="space-y-2">
@@ -273,9 +275,9 @@ export default function QuizAttemptPage() {
                 onClick={() => handleChoiceClick(currentQuestion._id, choice._id)}
                 className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left text-sm transition disabled:cursor-not-allowed ${stateClasses}`}
               >
-                <span className="text-slate-700 dark:text-slate-200">{choice.text}</span>
-                {showFeedback && isCorrectChoice && <span className="font-bold">✓</span>}
-                {showFeedback && isSelected && !isCorrectChoice && <span className="font-bold">✗</span>}
+                <span className="break-words text-slate-700 dark:text-slate-200">{choice.text}</span>
+                {showFeedback && isCorrectChoice && <span className="shrink-0 font-bold">✓</span>}
+                {showFeedback && isSelected && !isCorrectChoice && <span className="shrink-0 font-bold">✗</span>}
               </button>
             );
           })}

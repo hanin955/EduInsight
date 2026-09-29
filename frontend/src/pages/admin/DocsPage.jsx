@@ -18,24 +18,24 @@ const formatSize = (bytes) => {
 
 function DocumentList({ documents, canDelete, onDelete, emptyLabel }) {
     if (documents.length === 0) {
-        return <div className="px-6 py-8 text-center text-sm text-slate-400">{emptyLabel}</div>;
+        return <div className="px-4 py-8 text-center text-sm text-slate-400 sm:px-6">{emptyLabel}</div>;
     }
     return (
         <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {documents.map((doc) => (
-                <li key={doc._id} className="flex items-center justify-between px-6 py-4">
-                    <div className="flex items-center gap-3">
-                        <FileText size={20} className="text-indigo-500" />
-                        <div>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{doc.title}</p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                <li key={doc._id} className="flex items-center justify-between gap-3 px-4 py-4 sm:px-6">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <FileText size={20} className="shrink-0 text-indigo-500" />
+                        <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{doc.title}</p>
+                            <p className="truncate text-xs text-slate-500 dark:text-slate-400">
                                 {doc.fileType?.toUpperCase()} · {formatSize(doc.fileSize)}
                                 {doc.owner?.firstName && ` · par ${doc.owner.firstName} ${doc.owner.lastName}`}
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <a
+                    <div className="flex shrink-0 items-center gap-3">
+                        
                             href={getDocumentUrl(doc.fileName)}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -146,8 +146,8 @@ export default function DocsPage() {
     return (
         <div className="space-y-8">
             <div>
-                <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <h2 className="text-base font-semibold text-slate-900 dark:text-white sm:text-lg">
                         {isStudent ? 'Documents partagés' : 'Mes documents partagés'}
                     </h2>
                     {isAdminOrTeacher && (
@@ -155,7 +155,7 @@ export default function DocsPage() {
                             <button
                                 onClick={() => sharedFileInputRef.current?.click()}
                                 disabled={uploadingShared}
-                                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50"
+                                className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
                             >
                                 <Upload size={16} />
                                 {uploadingShared ? 'Envoi en cours...' : 'Partager un document'}
@@ -166,7 +166,7 @@ export default function DocsPage() {
                 </div>
                 <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     {loading ? (
-                        <div className="px-6 py-8 text-center text-sm text-slate-400">Chargement...</div>
+                        <div className="px-4 py-8 text-center text-sm text-slate-400 sm:px-6">Chargement...</div>
                     ) : (
                         <DocumentList
                             documents={sharedDocs}
@@ -188,6 +188,5 @@ export default function DocsPage() {
                 )}
             </div>
         </div>
-
     );
 }
