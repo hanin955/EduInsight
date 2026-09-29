@@ -157,6 +157,35 @@ const Login = () => {
                                     </Link>
                                 </p>
                             </form>
+                            <div className='mt-8'>
+                                <div className='border-t border-slate-200 pt-6'>
+                                    <p className='mb-4 text-center text-xs font-semibold uppercase tracking-widest text-slate-500'>
+                                        Demo accounts
+                                    </p>
+                                    <div className='grid grid-cols-1 gap-3 sm:grid-cols-3'>
+                                        {[
+                                            { role: 'Admin', email: 'karim.haddad@eduinsight.com' },
+                                            { role: 'Teacher', email: 'ibrahim.dev@eduinsight.com' },
+                                            { role: 'Student', email: 'sami.benali@eduinsight.com' },
+                                        ].map((acct) => (
+                                            <button
+                                                key={acct.role}
+                                                type="button"
+                                                onClick={() => {
+                                                    if (emailRef.current) emailRef.current.value = acct.email;
+                                                    if (passwordRef.current) passwordRef.current.value = 'Password123';
+                                                    setError('');
+                                                }}
+                                                className='rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-left transition hover:border-blue-300 hover:bg-blue-50/60'
+                                            >
+                                                <p className='text-sm font-semibold text-blue-700'>{acct.role}</p>
+                                                <p className='mt-1 truncate text-xs text-slate-600'>{acct.email}</p>
+                                                <p className='mt-1 text-xs text-slate-500'>Password123</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

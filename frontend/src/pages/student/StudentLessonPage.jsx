@@ -55,7 +55,7 @@ export default function StudentLessonPage() {
           dangerouslySetInnerHTML={{ __html: lesson.content || '' }}
         />
         {lesson.pdfUrl && (
-          
+          <a
             href={`${fileBaseUrl}/uploads/${lesson.pdfUrl}`}
             target="_blank"
             rel="noopener noreferrer"

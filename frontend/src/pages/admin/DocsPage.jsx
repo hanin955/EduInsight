@@ -35,7 +35,7 @@ function DocumentList({ documents, canDelete, onDelete, emptyLabel }) {
                         </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
-                        
+                        <a
                             href={getDocumentUrl(doc.fileName)}
                             target="_blank"
                             rel="noopener noreferrer"
