@@ -1,6 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, getDashboardPath } from '../components/context/AuthContext';
+
+const demoAccounts = [
+    { role: 'Admin', email: 'karim.haddad@eduinsight.com', password: 'Password123' },
+    { role: 'Teacher', email: 'ibrahim.dev@eduinsight.com', password: 'Password123' },
+    { role: 'Student', email: 'sami.benali@eduinsight.com', password: 'Password123' },
+];
+
 const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -48,6 +55,12 @@ const Login = () => {
         if (!result.success) {
             setError(result.message || 'Identifiants invalides.');
         }
+    };
+    const useDemoAccount = (account) => {
+        emailRef.current.value = account.email;
+        passwordRef.current.value = account.password;
+        setError('');
+        emailRef.current.focus();
     };
     return (
         <div className='flex items-center bg-white min-h-screen'>
@@ -156,6 +169,25 @@ const Login = () => {
                                         Create now
                                     </Link>
                                 </p>
+                                <div className='mt-4 border-t border-slate-200 pt-4'>
+                                    <p className='text-center text-xs font-semibold uppercase tracking-wider text-slate-500'>
+                                        Demo accounts
+                                    </p>
+                                    <div className='mt-3 grid gap-2 sm:grid-cols-3'>
+                                        {demoAccounts.map((account) => (
+                                            <button
+                                                key={account.role}
+                                                type='button'
+                                                onClick={() => useDemoAccount(account)}
+                                                className='rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-left transition hover:border-blue-300 hover:bg-blue-100'
+                                            >
+                                                <span className='block text-xs font-semibold text-blue-900'>{account.role}</span>
+                                                <span className='mt-1 block truncate text-[11px] text-slate-600'>{account.email}</span>
+                                                <span className='mt-1 block text-[11px] text-slate-500'>Password123</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </div>
